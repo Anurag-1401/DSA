@@ -18,7 +18,6 @@ class LRUCache {
         this.capacity = capacity;
         this.map = new HashMap<>();
 
-        // Dummy head and tail (to avoid null checks)
         head = new Node(0, 0);
         tail = new Node(0, 0);
         head.next = tail;
@@ -30,7 +29,6 @@ class LRUCache {
             return -1;
         }
         Node node = map.get(key);
-        // Move this node to the front (most recently used)
         remove(node);
         insertToFront(node);
         return node.value;
@@ -38,26 +36,21 @@ class LRUCache {
 
     public void put(int key, int value) {
         if (map.containsKey(key)) {
-            // Remove the old node
             remove(map.get(key));
         } else if (map.size() == capacity) {
-            // Remove the least recently used node (from tail)
             remove(tail.prev);
         }
 
-        // Insert new node at front
         Node newNode = new Node(key, value);
         insertToFront(newNode);
     }
 
-    // Helper: remove a node from DLL
     private void remove(Node node) {
         map.remove(node.key);
         node.prev.next = node.next;
         node.next.prev = node.prev;
     }
 
-    // Helper: insert a node right after head
     private void insertToFront(Node node) {
         map.put(node.key, node);
         node.next = head.next;
@@ -66,3 +59,14 @@ class LRUCache {
         head.next = node;
     }
 }
+
+
+
+
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
