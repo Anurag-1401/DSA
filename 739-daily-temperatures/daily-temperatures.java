@@ -2,7 +2,8 @@ class Solution {
     public int[] dailyTemperatures(int[] temperatures) {
         int n = temperatures.length,prev=0;
         int[] ans = new int[n];
-        Stack<Integer> stack = new Stack<>();
+        // Stack<Integer> stack = new Stack<>();
+        Deque<Integer> stack = new ArrayDeque<>();
 
         for(int i = 0;i < n;i++){
             while(!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]){
