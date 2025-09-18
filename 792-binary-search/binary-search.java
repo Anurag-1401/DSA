@@ -3,8 +3,8 @@ class Solution {
         int left=0,right = nums.length,mid=0;
         
         while(left<right){
-            mid = left + (right-left)/2;
-
+            // mid = left + (right-left)/2;
+            mid = (left+right) >>>1;
             if(nums[mid] == target) return mid;
             else if(nums[mid] < target) left++;
             else right--;
