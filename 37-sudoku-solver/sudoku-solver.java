@@ -1,46 +1,43 @@
 class Solution {
-    boolean[][] rows = new boolean[9][10];
-    boolean[][] cols = new boolean[9][10];
-    boolean[][] boxes = new boolean[9][10];
+    boolean[][] row = new boolean[9][9];
+    boolean[][] column = new boolean[9][9];
+    boolean[][] box = new boolean[9][9];
 
     public void solveSudoku(char[][] board) {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (board[i][j] != '.') {
-                    int num = board[i][j] - '0';
-                    rows[i][num] = cols[j][num] = boxes[boxIndex(i, j)][num] = true;
-                }
+
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                char ch = board[i][j];
+                if(ch == '.') continue;
+                int num = ch - '1';
+                int boxIndex = (i / 3) * 3 + (j / 3);
+                row[i][num] = true;
+                column[j][num] = true;
+                box[boxIndex][num]= true;
             }
         }
-        backtrack(board, 0, 0);
+
+        sudoku(board, 0, 0);
     }
 
-    private boolean backtrack(char[][] board, int r, int c) {
-        if (r == 9) return true;
+    public boolean sudoku(char[][] board, int r, int c){
+        if(r == 9) return true;
+        if(c == 9) return sudoku(board, r+1, 0);
+        if(board[r][c] != '.') return sudoku(board, r, c+1);
 
-        int nextR = (c == 8) ? r + 1 : r;
-        int nextC = (c + 1) % 9;
+        int b = (r / 3)*3 + (c/3);
+        for(int d = 0; d < 9; d++){
+            if(!row[r][d] && !column[c][d] && !box[b][d]){
+                board[r][c] = (char) ('1' + d);
+                row[r][d] = column[c][d] = box[b][d] = true;
 
-        if (board[r][c] != '.') {
-            return backtrack(board, nextR, nextC);
-        }
-
-        for (int num = 1; num <= 9; num++) {
-            int box = boxIndex(r, c);
-            if (!rows[r][num] && !cols[c][num] && !boxes[box][num]) {
-                board[r][c] = (char) (num + '0');
-                rows[r][num] = cols[c][num] = boxes[box][num] = true;
-
-                if (backtrack(board, nextR, nextC)) return true;
+                if(sudoku(board, r, c+1)) return true;
 
                 board[r][c] = '.';
-                rows[r][num] = cols[c][num] = boxes[box][num] = false;
+                row[r][d] = column[c][d] = box[b][d] = false;
             }
         }
-        return false;
-    }
 
-    private int boxIndex(int r, int c) {
-        return (r / 3) * 3 + (c / 3);
+        return false;
     }
 }
