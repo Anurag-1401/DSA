@@ -1,43 +1,45 @@
 class Trie {
-    class TrieNode {
-        TrieNode[] children = new TrieNode[26];
-        boolean isEnd = false;
+    public class TrieNode{
+        TrieNode children[] = new TrieNode[26];
+        boolean endOfWord = false;
     }
-
     private TrieNode root;
-
     public Trie() {
         root = new TrieNode();
     }
-
+    
     public void insert(String word) {
-        TrieNode node = root;
-        for (char c : word.toCharArray()) {
-            int idx = c - 'a';
-            if (node.children[idx] == null) {
-                node.children[idx] = new TrieNode();
+        TrieNode curr = root;
+        for(char c:word.toCharArray()){
+            int i = c-'a';
+            if(curr.children[i]==null){
+                curr.children[i] = new TrieNode();
             }
-            node = node.children[idx];
+            curr = curr.children[i];
         }
-        node.isEnd = true;
+        curr.endOfWord = true;
     }
-
+    
     public boolean search(String word) {
-        TrieNode node = root;
-        for (char c : word.toCharArray()) {
-            int idx = c - 'a';
-            if (node.children[idx] == null) return false;
-            node = node.children[idx];
+        TrieNode curr = root;
+        for(char c:word.toCharArray()){
+            int i = c-'a';
+            if(curr.children[i]==null){
+                return false;
+            }
+            curr = curr.children[i];
         }
-        return node.isEnd;
+        return curr.endOfWord;
     }
-
+    
     public boolean startsWith(String prefix) {
-        TrieNode node = root;
-        for (char c : prefix.toCharArray()) {
-            int idx = c - 'a';
-            if (node.children[idx] == null) return false;
-            node = node.children[idx];
+        TrieNode curr = root;
+        for(char c:prefix.toCharArray()){
+            int i = c-'a';
+            if(curr.children[i]==null){
+                return false;
+            }
+            curr = curr.children[i];
         }
         return true;
     }
