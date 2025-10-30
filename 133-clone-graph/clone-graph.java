@@ -17,22 +17,24 @@ class Node {
     }
 }
 */
-
 class Solution {
+    Map<Node, Node> map = new HashMap<>();
+
     public Node cloneGraph(Node node) {
         if(node == null) return null;
-        Map<Node,Node> map = new HashMap<>();
 
-        return dfs(node,map);
-    }
-    private Node dfs(Node node ,Map<Node,Node> map){
-        if(map.containsKey(node)) return map.get(node);
+        Node clonedNode = new Node(node.val);
+        map.put(node, clonedNode);
 
-        Node clone = new Node(node.val,new ArrayList<>());
-        map.put(node,clone);
+        for(Node neighbor: node.neighbors) {
+            if(map.containsKey(neighbor)) {
+                clonedNode.neighbors.add(map.get(neighbor));
+            }
+            else {
+                clonedNode.neighbors.add(cloneGraph(neighbor));
+            }
+        }
 
-        for(Node n : node.neighbors) clone.neighbors.add(dfs(n,map));
-
-        return clone;
+        return clonedNode;
     }
 }
