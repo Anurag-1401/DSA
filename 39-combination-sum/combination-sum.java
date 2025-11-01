@@ -1,22 +1,39 @@
 class Solution {
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        List<List<Integer>> result = new ArrayList<>();
-        Arrays.sort(candidates);
-        backtrack(result, new ArrayList<>(), candidates, target, 0);
-        return result;
+        return new java.util.AbstractList(){
+            List<List<Integer>> result;
+            private void init(){
+                result = new ArrayList();
+                backtrack(0, target, candidates, new ArrayList(), result);
+            }
+
+            @Override
+            public int size(){
+                if(result == null){
+                    init();
+                }
+                return result.size();
+            }
+
+            @Override
+            public List<Integer> get(int position){
+                return result.get(position);
+            }
+        };
     }
 
-    private void backtrack(List<List<Integer>> result, List<Integer> current, int[] candidates, int target, int start) {
-        if (target == 0) {
-            result.add(new ArrayList<>(current));
+    private void backtrack(int index, int target, int[] candidates, List<Integer> list, List<List<Integer>> result){
+        if(target == 0){
+            result.add(new ArrayList(list));
             return;
         }
-
-        for (int i = start; i < candidates.length; i++) {
-            if (candidates[i] > target) break; 
-            current.add(candidates[i]);
-            backtrack(result, current, candidates, target - candidates[i], i); 
-            current.remove(current.size() - 1);
+        for(int i = index; i < candidates.length; i++){
+            int remain = target - candidates[i];
+            if(remain >= 0){
+                list.add(candidates[i]);
+                backtrack(i, remain, candidates, list, result);
+                list.remove(list.size() - 1);
+            }
         }
     }
 }
