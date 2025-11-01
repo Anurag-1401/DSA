@@ -1,26 +1,32 @@
-class Solution {
-  public int numDecodings(String s) {
-    final int n = s.length();
-    // dp[i] := the number of ways to decode s[i..n)
-    int[] dp = new int[n + 1];
-    dp[n] = 1; // ""
-    dp[n - 1] = isValid(s.charAt(n - 1)) ? 1 : 0;
-
-    for (int i = n - 2; i >= 0; --i) {
-      if (isValid(s.charAt(i)))
-        dp[i] += dp[i + 1];
-      if (isValid(s.charAt(i), s.charAt(i + 1)))
-        dp[i] += dp[i + 2];
+public class Solution {
+    public boolean isValid(int code, int len) {
+        if (len == 1) {
+            return code >= 1 && code <= 26;
+        } else {
+            return code >= 10 && code <= 26;
+        }
     }
 
-    return dp[0];
-  }
+    public int countOfDecoding(int i, String s, int[] dp) {
+        if (i >= s.length()) {
+            return 1;
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        dp[i] = 0;
+        if (isValid(s.charAt(i) - '0', 1)) {
+            dp[i] += countOfDecoding(i + 1, s, dp);
+        }
+        if (i < s.length() - 1 && isValid((s.charAt(i) - '0') * 10 + s.charAt(i + 1) - '0', 2)) {
+            dp[i] += countOfDecoding(i + 2, s, dp);
+        }
+        return dp[i];
+    }
 
-  private boolean isValid(char c) {
-    return c != '0';
-  }
-
-  private boolean isValid(char c1, char c2) {
-    return c1 == '1' || c1 == '2' && c2 < '7';
-  }
+    public int numDecodings(String s) {
+        int[] dp = new int[s.length()];
+        Arrays.fill(dp, -1);
+        return countOfDecoding(0, s, dp);
+    }
 }
