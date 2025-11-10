@@ -6,6 +6,9 @@ class Solution {
             h+=w;
         }
 
+        if (days == weights.length) return l;
+        if (days == 1) return h;
+
         while(l<h){
             mid = l+(h-l)/2;
             int need=1,sum=0;
