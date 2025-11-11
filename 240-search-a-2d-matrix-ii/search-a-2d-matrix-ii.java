@@ -1,5 +1,7 @@
 class Solution {
     public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix == null || matrix.length < 1 || matrix[0].length <1) return false;
+        
         int m=matrix.length,n= matrix[0].length;
         int i=0,j=n-1;
 
