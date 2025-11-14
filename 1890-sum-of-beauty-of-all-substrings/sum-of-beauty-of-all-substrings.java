@@ -1,27 +1,39 @@
 class Solution {
     public int beautySum(String s) {
-        int n = s.length();
-        int ans = 0;
+        int result=0;
+       
+        for(int j=0;j<s.length();j++)
+        {
+             int store[]=new int[26];
+        int track[]=new int[s.length()+1];
+        
+        int max=0;
+        int min=0;
+            for(int i=j;i<s.length();i++)
+        {
+            int index=s.charAt(i)-'a';
+            int old=store[index];
+            int up=store[index]+1;
+            store[index]++;
+            
+            if(track[old]>0) track[old]--;
+            track[up]++;
 
-        for (int i = 0; i < n; i++) {
-
-            int[] freq = new int[26]; // frequency for current starting index
-
-            for (int j = i; j < n; j++) {
-                freq[s.charAt(j) - 'a']++;
-
-                int maxF = 0, minF = Integer.MAX_VALUE;
-
-                for (int f : freq) {
-                    if (f > 0) {
-                        maxF = Math.max(maxF, f);
-                        minF = Math.min(minF, f);
-                    }
-                }
-
-                ans += (maxF - minF);
+            if(max<up)
+            {
+                max=up;
             }
+            if(min==0 || up<min)
+            {
+                min=up;
+            }
+            else if(min==old && track[old]==0)
+            {
+                min=up;
+            }
+            result+=(max-min);
         }
-        return ans;
-    }
+        }
+        return result;
+}
 }
