@@ -10,23 +10,29 @@
  */
 class Solution {
     public ListNode sortList(ListNode head) {
-        if (head == null) return null;
-
-        List<Integer> values = new ArrayList<>();
-        ListNode curr = head;
-        while (curr != null) {
-            values.add(curr.val);
-            curr = curr.next;
+        if (head == null || head.next == null) {
+            return head;
         }
-
-        Collections.sort(values);
-
-        curr = head;
-        for (int v : values) {
-            curr.val = v;
-            curr = curr.next;
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        ListNode temp = head;
+        while (temp != null) {
+            min = Math.min(min, temp.val);
+            max = Math.max(max, temp.val);
+            temp = temp.next;
         }
-
+        int[] freq = new int[max - min + 1];
+        temp = head;
+        while (temp != null) {
+            freq[temp.val - min]++;
+            temp = temp.next;
+        }
+        temp = head;
+        for (int i = 0; i < freq.length; i++) {
+            while (freq[i]-- > 0) {
+                temp.val = i + min;
+                temp = temp.next;
+            }
+        }
         return head;
     }
 }
