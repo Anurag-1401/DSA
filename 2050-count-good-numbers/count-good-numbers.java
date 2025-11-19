@@ -2,27 +2,25 @@ class Solution {
     static final long MOD = 1000000007;
 
     public int countGoodNumbers(long n) {
-        long even = (n + 1) / 2;   // positions with 5 choices
-        long odd  = n / 2;         // positions with 4 choices
-
-        long pow5 = powerIterative(5, even);
-        long pow4 = powerIterative(4, odd);
+        long evenPositions = (n + 1) / 2;  // indices: 0,2,4,... → 5 choices
+        long oddPositions  = n / 2;        // indices: 1,3,5,... → 4 choices
+        
+        long pow5 = power(5, evenPositions);
+        long pow4 = power(4, oddPositions);
 
         return (int)((pow5 * pow4) % MOD);
     }
 
-    // ITERATIVE fast exponentiation (binary exponentiation)
-    private long powerIterative(long x, long n) {
-        long result = 1;
-        x %= MOD;
+    // Recursive fast exponentiation
+    private long power(long x, long n) {
+        if (n == 0) return 1;
 
-        while (n > 0) {
-            if ((n & 1) == 1) {    // if n is odd
-                result = (result * x) % MOD;
-            }
-            x = (x * x) % MOD;     // square the base
-            n >>= 1;               // n = n / 2
-        }
+        long half = power(x, n / 2);
+
+        long result = (half * half) % MOD;
+
+        if (n % 2 == 1) 
+            result = (result * x) % MOD;
 
         return result;
     }
