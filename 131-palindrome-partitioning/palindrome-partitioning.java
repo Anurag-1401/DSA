@@ -1,29 +1,45 @@
 class Solution {
-    public List<List<String>> partition(String s) {
-        List<List<String>> ans = new ArrayList<>();
-        backtrack(0, s, new ArrayList<>(), ans);
-        return ans;
-    }
+    int n;
+    boolean[][] is_palindrome;
+    String[][] substrings;
 
-    private void backtrack(int index, String s,List<String> path, List<List<String>> ans) {
+    List<List<String>> ans;
 
-        if (index == s.length()) {
-            ans.add(new ArrayList<>(path));
+    void FindSubstrings(int ind, ArrayList<String> list) {
+        if (ind == n) {
+            ans.add(new ArrayList<String>(list));
             return;
         }
 
-        for (int i = index; i < s.length(); i++) {
-            if (isPalindrome(s, index, i)) {
-                path.add(s.substring(index, i + 1));
-                backtrack(i + 1, s, path, ans);
-                path.remove(path.size() - 1);
-            }
+        for (int i = ind + 1; i <= n; i++) {
+            if (!is_palindrome[ind][i]) continue;
+            list.add(substrings[ind][i]);
+            FindSubstrings(i, list);
+            list.remove(list.size() - 1);
         }
     }
 
-    private boolean isPalindrome(String s, int l, int r) {
-        while (l < r) {
-            if (s.charAt(l++) != s.charAt(r--)) return false;
+    public List<List<String>> partition(String s) {
+        n = s.length();
+        is_palindrome = new boolean[n + 1][n + 1];
+        substrings = new String[n + 1][n + 1];
+        for (int i = 0; i < n; i++) for (int j = i + 1; j <= n; j++) {
+            substrings[i][j] = s.substring(i, j);
+            is_palindrome[i][j] = IsPalindrome(substrings[i][j]);
+        }
+
+        ans = new ArrayList<List<String>>();
+        FindSubstrings(0, new ArrayList<String>());
+        return ans;
+    }
+
+    boolean IsPalindrome(String s) {
+        int lower = 0;
+        int higher = s.length() - 1;
+        while (lower < higher) {
+            if (s.charAt(lower) != s.charAt(higher)) return false;
+            lower++;
+            higher--;
         }
         return true;
     }
