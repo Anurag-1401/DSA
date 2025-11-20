@@ -1,36 +1,37 @@
 class Solution {
     public List<String> addOperators(String num, int target) {
-        List<String> res = new ArrayList<>();
-        dfs(0, "", 0, 0, num, target, res);
-        return res;
+        List<String> result = new ArrayList<>();
+        if (Long.valueOf(num) > Integer.MAX_VALUE) return result;
+        char[] nums = num.toCharArray();
+        char[] path = new char[nums.length * 2 - 1];
+        long val = 0;
+        for (int i = 0; i < nums.length; i++) {
+            val = val * 10 + nums[i] - '0';
+            path[i] = nums[i];        
+            addOperators(result, target, nums, path, 0, val, i + 1, i + 1);
+            if (val == 0) break;
+        }
+        return result;
     }
-
-    void dfs(int idx, String path, long calc, long tail, String num, int target, List<String> res) {
-
-        // If end of string reached
-        if (idx == num.length()) {
-            if (calc == target) res.add(path);
+    private void addOperators(List<String> result, int target, char[] nums, char[] path, long leftValue, 
+long rightValue, int numsPos, int pathPos) {
+        if (numsPos == nums.length) {
+            if (leftValue + rightValue == target)
+            result.add(new String(path, 0, pathPos));
             return;
         }
-
-        long curr = 0;
-        for (int i = idx; i < num.length(); i++) {
-
-            // Leading zero check
-            if (i > idx && num.charAt(idx) == '0') break;
-
-            curr = curr * 10 + (num.charAt(i) - '0');
-
-            if (idx == 0) {
-                // First number can't have operator before it
-                dfs(i + 1, path + curr, curr, curr, num, target, res);
-            } else {
-                dfs(i + 1, path + "+" + curr, calc + curr, curr, num, target, res);
-                dfs(i + 1, path + "-" + curr, calc - curr, -curr, num, target, res);
-
-                // Multiplication fixes previous operation using tail
-                dfs(i + 1, path + "*" + curr, calc - tail + tail * curr, tail * curr, num, target, res);
-            }
+        long val = 0;
+        int j = pathPos + 1;
+        for (int i = numsPos; i < nums.length; i++) {
+            val = val * 10 + nums[i] - '0';
+            path[j++] = nums[i];
+            path[pathPos] = '+';
+            addOperators(result, target, nums, path, leftValue + rightValue, val, i + 1, j);
+            path[pathPos] = '-';
+            addOperators(result, target, nums, path, leftValue + rightValue, -val, i + 1, j);
+            path[pathPos] = '*';
+            addOperators(result, target, nums, path, leftValue, rightValue * val, i + 1, j);
+            if (nums[numsPos] == '0') return;
         }
     }
 }
