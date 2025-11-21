@@ -1,7 +1,9 @@
 class Solution {
     public int singleNumber(int[] nums) {
-        int res = 0;
-        for(int num : nums) res ^= num;
-        return res;
+        int x = 0;
+        for (int n : nums) {
+            x ^= n;   // XOR cancels out duplicates
+        }
+        return x;
     }
 }
