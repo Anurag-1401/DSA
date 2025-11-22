@@ -1,26 +1,23 @@
 class Solution {
     public int countPrimes(int n) {
-        if (n <= 2) return 0;
+        if (n < 3) return 0; // no primes less than 2
 
-        boolean[] isPrime = new boolean[n];
-        Arrays.fill(isPrime, true);
+        boolean[] isComposite = new boolean[n]; // false = prime, true = not prime
+        int count = n / 2; // start by assuming half of numbers are odd → possible primes
 
-        isPrime[0] = false;
-        isPrime[1] = false;
-
-        // Sieve of Eratosthenes
-        for (int i = 2; i * i < n; i++) {
-            if (isPrime[i]) {
-                for (int j = i * i; j < n; j += i) {
-                    isPrime[j] = false;
+        // We skip even numbers to save time
+        for (int i = 3; i * i < n; i += 2) {
+            if (!isComposite[i]) {
+                // mark odd multiples of i as composite
+                for (int j = i * i; j < n; j += 2 * i) {
+                    if (!isComposite[j]) {
+                        isComposite[j] = true;
+                        count--;
+                    }
                 }
             }
         }
 
-        int count = 0;
-        for (int i = 2; i < n; i++) {
-            if (isPrime[i]) count++;
-        }
         return count;
     }
 }
