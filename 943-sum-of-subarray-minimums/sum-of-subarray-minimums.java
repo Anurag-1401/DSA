@@ -1,40 +1,32 @@
 class Solution {
     public int sumSubarrayMins(int[] arr) {
-        int n = arr.length;
-        long mod = 1_000_000_007;
+      final int MOD = 1_000_000_007;
+    final int n = arr.length;
+    long ans = 0;
+    // prevMin[i] := index k s.t. arr[k] is the previous minimum in arr[:i]
+    int[] prevMin = new int[n];
+    // nextMin[i] := index k s.t. arr[k] is the next minimum in arr[i + 1:]
+    int[] nextMin = new int[n];
+    Deque<Integer> stack = new ArrayDeque<>();
 
-        int[] left = new int[n];
-        int[] right = new int[n];
+    Arrays.fill(prevMin, -1);
+    Arrays.fill(nextMin, n);
 
-        Stack<Integer> st = new Stack<>();
+    for (int i = 0; i < arr.length; ++i) {
+      while (!stack.isEmpty() && arr[stack.peek()] > arr[i]) {
+        final int index = stack.pop();
+        nextMin[index] = i;
+      }
+      if (!stack.isEmpty())
+        prevMin[i] = stack.peek();
+      stack.push(i);
+    }
 
-        // 1. Previous Smaller Element (strictly <)
-        for (int i = 0; i < n; i++) {
-            while (!st.isEmpty() && arr[st.peek()] > arr[i]) {
-                st.pop();
-            }
-            left[i] = st.isEmpty() ? (i + 1) : (i - st.peek());
-            st.push(i);
-        }
+    for (int i = 0; i < arr.length; ++i) {
+      ans += (long) arr[i] * (i - prevMin[i]) * (nextMin[i] - i);
+      ans %= MOD;
+    }
 
-        st.clear();
-
-        // 2. Next Smaller Element (<=)
-        for (int i = n - 1; i >= 0; i--) {
-            while (!st.isEmpty() && arr[st.peek()] >= arr[i]) {
-                st.pop();
-            }
-            right[i] = st.isEmpty() ? (n - i) : (st.peek() - i);
-            st.push(i);
-        }
-
-        // 3. Compute result
-        long sum = 0;
-        for (int i = 0; i < n; i++) {
-            long contrib = (long) arr[i] * left[i] * right[i];
-            sum = (sum + contrib) % mod;
-        }
-
-        return (int) sum;
+    return (int) ans;   
     }
 }
