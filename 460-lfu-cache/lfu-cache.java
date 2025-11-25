@@ -1,64 +1,162 @@
 class LFUCache {
-
     private final int capacity;
-    private int minFreq;
 
-    private Map<Integer, Integer> keyToValue = new HashMap<>();
-    private Map<Integer, Integer> keyToFreq = new HashMap<>();
-    private Map<Integer, LinkedHashSet<Integer>> freqToKeys = new HashMap<>();
+    private final SingleNode sortedFrequenciesHead;
 
-    public LFUCache(int capacity) {
+    private final Node keyMap[];
+    private int numberOfKeys;
+
+    private class SingleNode {
+        final int frequency;
+
+        final Node mruHead;
+        final Node mruTail;
+
+        SingleNode next;
+
+        public SingleNode(final int frequency, final Node mruHead, final Node mruTail) {
+            this.frequency = frequency;
+
+            this.mruHead = mruHead;
+            this.mruTail = mruTail;
+
+            this.next = null;
+        }
+    }
+
+    private class Node {
+        final int key;
+        int value;
+
+        Node previous;
+        Node next;
+
+        int frequency;
+
+        public Node(final int key, final int value) {
+            this.key = key;
+            this.value = value;
+
+            this.previous = null;
+            this.next = null;
+
+            this.frequency = 0;
+        }
+    }
+
+    public LFUCache(final int capacity) {
         this.capacity = capacity;
-        this.minFreq = 0;
-    }
 
-    public int get(int key) {
-        if (!keyToValue.containsKey(key))
+        this.sortedFrequenciesHead = new SingleNode(0, null, null);
+
+        final SingleNode maxFrequenciesTail = new SingleNode(Integer.MAX_VALUE, null, null);
+        this.sortedFrequenciesHead.next = maxFrequenciesTail;
+
+        this.keyMap = new Node[100001];
+        this.numberOfKeys = 0;
+    }
+    
+    public int get(final int key) {
+        final Node node = this.keyMap[key];
+
+        if (node == null) {
             return -1;
+        }
 
-        increaseFreq(key);
-        return keyToValue.get(key);
+        increaseFrequency(node);
+        return node.value;
     }
 
-    public void put(int key, int value) {
-        if (capacity == 0)
-            return;
+    public void put(final int key, final int value) {
+        final Node node = this.keyMap[key];
 
-        if (keyToValue.containsKey(key)) {
-            keyToValue.put(key, value);
-            increaseFreq(key);
-            return;
+        if (node != null) {
+            node.value = value;
+            increaseFrequency(node);
+        } else {
+            if (this.numberOfKeys >= this.capacity) {
+                evictLfu();
+            }
+
+            final Node newNode = new Node(key, value);
+            increaseFrequency(newNode);
+            this.keyMap[key] = newNode;
+            this.numberOfKeys++;
         }
-
-        if (keyToValue.size() >= capacity) {
-            // Evict LRU inside minFreq list
-            LinkedHashSet<Integer> keys = freqToKeys.get(minFreq);
-            int lruKey = keys.iterator().next();  // first element = LRU
-            keys.remove(lruKey);
-
-            keyToValue.remove(lruKey);
-            keyToFreq.remove(lruKey);
-        }
-
-        // Insert new key with freq = 1
-        keyToValue.put(key, value);
-        keyToFreq.put(key, 1);
-        freqToKeys.computeIfAbsent(1, k -> new LinkedHashSet<>()).add(key);
-
-        minFreq = 1;  // reset
     }
 
-    private void increaseFreq(int key) {
-        int freq = keyToFreq.get(key);
-        keyToFreq.put(key, freq + 1);
+    private void increaseFrequency(final Node node) {
+        node.frequency++;
 
-        LinkedHashSet<Integer> set = freqToKeys.get(freq);
-        set.remove(key);
+        SingleNode previousToPreviousNode = null;
+        SingleNode previousNode = this.sortedFrequenciesHead;
 
-        if (freq == minFreq && set.isEmpty()) {
-            minFreq++;
+        while (previousNode.next != null) {
+            if (node.frequency <= previousNode.next.frequency) {
+                break;
+            }
+
+            previousToPreviousNode = previousNode;
+            previousNode = previousNode.next;
         }
 
-        freqToKeys.computeIfAbsent(freq + 1, k -> new LinkedHashSet<>()).add(key);
+        final SingleNode nextNode = previousNode.next;
+        final SingleNode frequencyNode;
+
+        if (node.frequency == nextNode.frequency) {
+            frequencyNode = nextNode;
+        } else {
+            // Create a new LRU linked list and then insert a new frequency node
+            final Node mruHead = new Node(-1, -1);
+            final Node mruTail = new Node(-1, -1);
+
+            mruHead.next = mruTail;
+            mruTail.previous = mruHead;
+
+            frequencyNode = new SingleNode(node.frequency, mruHead, mruTail);
+            frequencyNode.next = nextNode;
+            previousNode.next = frequencyNode; 
+        }
+
+        if (node.frequency > 1) {
+            removeNode(node);
+
+            // Is this linked list empty?
+            if (previousNode.mruTail.previous.key == -1) {
+                previousToPreviousNode.next = frequencyNode;
+            }
+        }
+
+        addNode(frequencyNode.mruHead, node);
+    }
+
+    private void evictLfu() {
+        final SingleNode lowestFrequencyNode = this.sortedFrequenciesHead.next;
+
+        final Node mruTail = lowestFrequencyNode.mruTail;
+        final Node nodeToEvict = mruTail.previous;
+
+        removeNode(nodeToEvict);
+
+        this.keyMap[nodeToEvict.key] = null;
+        this.numberOfKeys--;
+
+        // Is this linked list empty?
+        if (mruTail.previous.key == -1) {
+            this.sortedFrequenciesHead.next = lowestFrequencyNode.next;
+        }
+    }
+
+    private void removeNode(final Node node) {
+        node.previous.next = node.next;
+        node.next.previous = node.previous;
+    }
+
+    private void addNode(final Node mruHeadNode, final Node node) {
+        node.next = mruHeadNode.next;
+        node.previous = mruHeadNode;
+
+        mruHeadNode.next = node;
+        node.next.previous = node;
     }
 }
