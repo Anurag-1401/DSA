@@ -13,5 +13,9 @@ This repository contains multiple DSA problems.
 ### 3. [Leet-Code 75 II](./Leet-Code%2075%20II/README.md)
 75 problems down, countless insights gained — the journey to mastery continues.
 
+### 4. [Strivers Some](./Strivers%20Some/README.md)
+75 problems down, countless insights gained — the journey to mastery continues.
+
+
 ---
 
