@@ -14,7 +14,7 @@ This repository contains multiple DSA problems.
 75 problems down, countless insights gained — the journey to mastery continues.
 
 ### 4. [Strivers Some](./Strivers%20Some/README.md)
-75 problems down, countless insights gained — the journey to mastery continues.
+Strivers down, countless insights gained — the journey to mastery continues.
 
 
 ---
