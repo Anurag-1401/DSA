@@ -3,11 +3,12 @@ class Solution {
         int count =0,maxC=0;
 
         for(int i=0;i<nums.length;i++){
-            if(nums[i] == 1) {
-                count++;
+            if(nums[i] == 1) count++;
+            else {
                 if(count>maxC) maxC = count;
-            }else count =0;
+                count =0;
+            }
         }
-        return maxC;
+        return maxC > count ? maxC : count;
     }
 }
