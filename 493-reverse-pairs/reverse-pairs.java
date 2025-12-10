@@ -1,42 +1,43 @@
 class Solution {
     public int reversePairs(int[] nums) {
-        return mergeSort(nums,0,nums.length-1);
+        return mergeSort(nums, 0, nums.length - 1);
     }
 
-    private int mergeSort(int[] nums,int l,int r){
-        if(l>=r) return 0;
-        
-        int count = 0;
-        int mid = l+(r-l)/2;
+    public void merge(int[] arr, int low, int mid, int high) {
+        int left = low, right = mid + 1, i = 0;
+        int[] result = new int[high - low + 1];
 
-        count+=mergeSort(nums,l,mid);
-        count+=mergeSort(nums,mid+1,r);
-        count+=merge(nums,l,mid,r);
+        while (left <= mid && right <= high) {
+            if (arr[left] <= arr[right]) result[i++] = arr[left++];
+            else result[i++] = arr[right++];
+        }
+        while (left <= mid) result[i++] = arr[left++];
+        while (right <= high) result[i++] = arr[right++];
 
-        return count;
+        for (int j = 0; j < result.length; ++j)
+            arr[low + j] = result[j];
     }
 
-    private int merge(int[] nums,int l,int mid,int r){
-        int[] temp = new int[r-l+1];
-        int j=mid+1,k=0,count=0;
-
-        for(int i=l;i<=mid;i++){
-            while(j<=r && (long)nums[i] > 2L * nums[j]) j++;
-            count+=(j-mid-1);
+    public int countPairs(int[] arr, int low, int mid, int high) {
+        int cnt = 0;
+        int right = mid + 1;
+        for (int i = low; i <= mid; ++i) {
+            while (right <= high && (long)arr[i] > 2L * arr[right]) right++;
+            cnt += right - (mid + 1);
         }
+        return cnt;
+    }
 
-        int i=l;
-        j=mid+1;
-        while(i<=mid && j<=r){
-            if(nums[i]<=nums[j]) temp[k++] = nums[i++];
-            else temp[k++] = nums[j++];
-        }
+    public int mergeSort(int[] arr, int left, int right) {
+        if (left >= right) return 0;
 
-        while(i<=mid) temp[k++] = nums[i++];
-        while(j<=r) temp[k++] = nums[j++];
+        int mid = (left + right) / 2;
+        int cnt = 0;
+        cnt += mergeSort(arr, left, mid);
+        cnt += mergeSort(arr, mid + 1, right);
+        cnt += countPairs(arr, left, mid, right);
+        merge(arr, left, mid, right);
 
-        for(int x=0;x<temp.length;x++) nums[l+x] = temp[x];
-
-        return count;
+        return cnt;
     }
 }
