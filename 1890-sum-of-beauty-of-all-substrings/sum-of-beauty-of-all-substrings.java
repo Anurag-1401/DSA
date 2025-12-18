@@ -1,20 +1,26 @@
 class Solution {
     public int beautySum(String s) {
-        int result = 0;
-
+        int result=0;
+       
         for(int j=0;j<s.length();j++){
-            int[] score = new int[26];
-
+            int store[]=new int[26];
+            int track[]=new int[s.length()+1];
+        
+            int max=0;
+            int min=0;
+        
             for(int i=j;i<s.length();i++){
-                score[s.charAt(i)-'a']++;
+            int index=s.charAt(i)-'a';
+            int old=store[index];
+            int up=store[index]+1;
+            store[index]++;
+            
+            if(track[old]>0) track[old]--;
+            track[up]++;
 
-                int max=0,min=Integer.MAX_VALUE;
-                for(int k=0;k<26;k++){
-                    if(score[k]>0){
-                        max = Math.max(max,score[k]);
-                        min = Math.min(min,score[k]);
-                    }
-                }
+            if(max<up)max=up;
+            if(min==0 || up<min) min=up;
+            else if(min==old && track[old]==0) min=up;
                 result+=(max-min);
             }
         }
