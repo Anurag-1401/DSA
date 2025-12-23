@@ -1,25 +1,33 @@
 class Solution {
-    public List<List<Integer>> combinationSum2(int[] candidates, int k) {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> res = new ArrayList<>();
-        Arrays.sort(candidates);
-        sum(0,new ArrayList<>(),res,candidates,k);
+
+        int[] freq = new int[51];
+        for(int num: candidates) {
+            freq[num]++;
+        }
+
+        backtrack(freq, target, res, new ArrayList<>(), 0);
         return res;
     }
 
-    private void sum(int start,List<Integer> curr,List<List<Integer>> res,int[] c,int k){
-        if(k==0){
-            res.add(new ArrayList<>(curr));
+    private void backtrack(int[] freq, int target, List<List<Integer>> res, List<Integer> currComb, int idx) {
+        if (target < 0)
+            return;
+        
+        if (target == 0) {
+            res.add(new ArrayList<>(currComb));
             return;
         }
 
-        for(int i=start;i<c.length;i++){
-            if(i>start && c[i] == c[i-1]) continue;
-
-            if(c[i]>k) break;
-
-            curr.add(c[i]);
-            sum(i+1,curr,res,c,k-c[i]);
-            curr.removeLast();
+        for (int i=idx; i<freq.length && i <= target; i++) {
+            if (freq[i] > 0) {
+                freq[i]--;
+                currComb.add(i);
+                backtrack(freq, target-i, res, currComb, i);
+                currComb.removeLast();
+                freq[i]++;
+            }
         }
     }
 }
