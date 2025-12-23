@@ -6,16 +6,19 @@ class Solution {
     }
 
     private void sum(int i,List<Integer> curr,List<List<Integer>> res,int[] c,int k){
-        if(k == 0){
-            res.add(new ArrayList<>(curr));
+        if(i == c.length){
+            if(k == 0){
+                res.add(new ArrayList<>(curr));
+            }   
             return;
         }
 
-        if(i == c.length || k<0) return;
+        if(k>=c[i]){
+            curr.add(c[i]);
+            sum(i,curr,res,c,k-c[i]);
+            curr.remove(curr.size()-1);
+        }
 
-        curr.add(c[i]);
-        sum(i,curr,res,c,k-c[i]);
-        curr.remove(curr.size()-1);
         sum(i+1,curr,res,c,k);
     }
 }
