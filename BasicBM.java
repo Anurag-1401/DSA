@@ -27,3 +27,17 @@ class Solution {
         return (n&1)==1;
     }
 }
+
+
+
+
+
+class Solution {
+    public int[] swap(int a, int b) {
+        a = a ^ b;
+        b = a ^ b;
+        a = a ^ b;
+
+        return new int[]{a,b};
+    }
+}
