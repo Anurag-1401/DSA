@@ -12,9 +12,9 @@ class Solution {
         private List<Integer> find(int n){
             List<Integer> ans = new ArrayList<>();
 
-            while(n%2==0) {
+            while((n&1)==0) {
                 ans.add(2);
-                n/=2;
+                n>>=1;
             }
 
             for(int i=3;i*i<=n;i+=2){
