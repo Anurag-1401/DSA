@@ -41,3 +41,19 @@ class Solution {
         return new int[]{a,b};
     }
 }
+
+
+
+
+
+
+class Solution {
+    public int findRangeXOR(int l, int r) {
+        int res = 0;
+
+        for(int i=l;i<r+1;i++){
+            res^=i;
+        }
+        return res;
+    }
+}
