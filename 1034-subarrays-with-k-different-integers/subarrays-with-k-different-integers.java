@@ -1,23 +1,23 @@
 class Solution {
     public int subarraysWithKDistinct(int[] nums, int k) {
-        return atMost(nums,k) - atMost(nums,k-1);
-    }
+        int len = nums.length;
+        int freq[] = new int[len + 1];
+        int elementCount = 0,result = 0,left = 0,mid = 0;
 
-    private int atMost(int[] s,int k){
-        int[] freq = new int[100001];
-        int l=0,dist=0,count=0;
+        for(int right = 0; right < len; right++){
+            if(++freq[nums[right]] == 1) elementCount++;
 
-        for(int r=0;r<s.length;r++){
-            if(freq[s[r]] == 0) dist++;
-            freq[s[r]]++;
-
-            while(dist>k){
-                freq[s[l]]--;
-                if(freq[s[l]] == 0) dist--;
-                l++;
+            while(elementCount > k){
+                if(--freq[nums[mid++]] == 0){
+                    elementCount--;
+                    left = mid;
+                }
             }
-            count+=(r-l+1);
+
+            while(freq[nums[mid]] > 1) freq[nums[mid++]]--;
+
+            if(elementCount == k) result += mid - left + 1;
         }
-        return count;
+        return result;
     }
 }
