@@ -1,18 +1,24 @@
 class Solution {
+    public boolean findSuccessor(int i, int[] hand, int groupSize)  {
+        int start = hand[i] + 1;
+        i += 1;
+        int size = 1;
+        while(i < hand.length && size < groupSize){
+            if(hand[i] == start) {
+                start += 1;
+                hand[i] = -1;
+                size++;
+            } 
+            i++;
+        }
+        return size == groupSize;
+    } 
     public boolean isNStraightHand(int[] hand, int groupSize) {
-        int n = hand.length;
-        if(n%groupSize != 0) return false;
-
-        TreeMap<Integer,Integer> map = new TreeMap<>();
-        for(int h:hand) map.put(h,map.getOrDefault(h,0)+1);
-
-        while(!map.isEmpty()){
-            int first = map.firstKey();
-            for(int i=0;i<groupSize;i++){
-                int curr = first+i;
-                if(!map.containsKey(curr)) return false;
-                map.put(curr,map.get(curr)-1);
-                if(map.get(curr) == 0) map.remove(curr);
+        if(hand.length % groupSize != 0) return false;
+        Arrays.sort(hand);
+        for(int i = 0; i < hand.length; i++) {
+            if(hand[i] != -1) {
+                if(!findSuccessor(i, hand, groupSize)) return false;
             }
         }
         return true;
