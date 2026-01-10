@@ -1,31 +1,27 @@
 class Solution {
     public int leastInterval(char[] tasks, int n) {
-        PriorityQueue<Integer> mh = new PriorityQueue<>((a,b)->b-a);
 
-        int[]freq = new int[26];
-        for(char c:tasks) freq[c-'A']++;
+        int[] freq = new int[26];
 
-        for(int f :freq){
-            if(f>0) mh.offer(f);
+        for (char task : tasks) {
+            freq[task - 'A']++;
         }
 
-        int time=0;
+        int maxFreq = 0;
+        for (int f : freq) {
+            maxFreq = Math.max(maxFreq, f);
+        }
 
-        while(!mh.isEmpty()){
-            List<Integer> temp = new ArrayList<>();
-            int cycle = n+1;
-
-            while(cycle>0 && !mh.isEmpty()){
-                int curr = mh.poll();
-                if(curr - 1 > 0) temp.add(curr-1);
-                time++;
-                cycle--;
+        int countMax = 0;
+        for (int f : freq) {
+            if (f == maxFreq) {
+                countMax++;
             }
-
-            for(int t:temp) mh.offer(t);
-
-            if(!mh.isEmpty()) time+=cycle;
         }
-        return time;
+
+        return Math.max(
+                tasks.length,
+                (maxFreq - 1) * (n + 1) + countMax
+        );
     }
 }
