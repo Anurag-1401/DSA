@@ -1,67 +1,70 @@
 class Twitter {
 
-    private int time = 0;
-    private Map<Integer,Set<Integer>> follower;
-    private Map<Integer,List<Tweet>> tweet;
+    class ListNode{
+        int tweetId;
+        int userId;
+        ListNode next;
 
-    private class Tweet{
-        int id;
-        int time;
+        ListNode(int t, int u){
+            this.tweetId = t;
+            this.userId = u;
+            next = null;
+        }
+    }
 
-        Tweet(int id,int time){
-            this.id = id;
-            this.time = time;
+    Map<Integer, int[]> map;
+    ListNode head;
+
+    private void addFirst(ListNode n){
+        if(head==null)head=n;
+        else {
+            n.next = head;
+            head = n;
         }
     }
 
     public Twitter() {
-        follower = new HashMap<>();
-        tweet = new HashMap<>();
+        map = new HashMap<>();
+        head = null;
+    }
+
+    private void addUser(int userId){
+        map.put(userId, new int[500]);
+        int[] list = map.get(userId);
+        list[userId] = 1;
     }
     
     public void postTweet(int userId, int tweetId) {
-        tweet.putIfAbsent(userId,new ArrayList<>());
-        tweet.get(userId).add(new Tweet(tweetId,time++));
-
-        follow(userId,userId);
+        if(!map.containsKey(userId)) addUser(userId);
+        addFirst(new ListNode(tweetId, userId));
     }
     
-    public List<Integer> getNewsFeed(int userId) {
-        List<Integer> res = new ArrayList<>();
-        if(!follower.containsKey(userId)) return res;
-
-        PriorityQueue<Tweet> pq = new PriorityQueue<>((a,b)->b.time-a.time);
-
-        for(int followeeId:follower.get(userId)){
-            List<Tweet> tList = tweet.getOrDefault(followeeId,new ArrayList<>());
-            for(Tweet t:tList) pq.offer(t);
+    public List<Integer> getNewsFeed(int user) {
+        List<Integer> out = new ArrayList<>();
+        int[] list = map.get(user);
+        if(list==null)return out;
+        ListNode temp = head;
+        while(temp!=null && out.size()<10){
+            int userId = temp.userId;
+            if(list[userId]==1)out.add(temp.tweetId);
+            temp=temp.next;
         }
-
-        int count = 0;
-        while(!pq.isEmpty() && count<10){
-            res.add(pq.poll().id);
-            count++;
-        }
-        return res;
+        return out;
     }
     
     public void follow(int followerId, int followeeId) {
-        follower.putIfAbsent(followerId,new HashSet<>());
-        follower.get(followerId).add(followeeId);
+        if(followerId==followeeId)return;
+        if(!map.containsKey(followerId))map.put(followerId, new int[500]);
+        int[] list = map.get(followerId);
+        list[followeeId] = 1;
+        list[followerId] = 1;
     }
     
     public void unfollow(int followerId, int followeeId) {
-        if(follower.containsKey(followerId) && followerId!=followeeId){
-            follower.get(followerId).remove(followeeId);
-        }
+        if(followerId==followeeId)return;
+        if(!map.containsKey(followerId))return;
+        int[] list = map.get(followerId);
+        list[followeeId]=0;
     }
 }
-
-/**
- * Your Twitter object will be instantiated and called as such:
- * Twitter obj = new Twitter();
- * obj.postTweet(userId,tweetId);
- * List<Integer> param_2 = obj.getNewsFeed(userId);
- * obj.follow(followerId,followeeId);
- * obj.unfollow(followerId,followeeId);
- */
+ 
