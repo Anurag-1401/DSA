@@ -1,30 +1,39 @@
-import java.util.*;
-
 class MedianFinder {
 
-    private PriorityQueue<Integer> left;
-    private PriorityQueue<Integer> right;
+    PriorityQueue<Integer> max;
+    PriorityQueue<Integer> min;
 
     public MedianFinder() {
-        left = new PriorityQueue<>((a, b) -> b - a);
-        right = new PriorityQueue<>();
+        max = new PriorityQueue<>((a, b) -> b - a);
+        min = new PriorityQueue<>();
     }
-
+    
     public void addNum(int num) {
-        left.offer(num);
+        if (max.isEmpty() || num < max.peek()) {
+            max.add(num);
+        }
+        else {
+            min.add(num);
+        }
 
-        right.offer(left.poll());
-
-        if (right.size() > left.size()) {
-            left.offer(right.poll());
+        if (max.size() > min.size() + 1) {
+            min.add(max.poll());
+        }
+        else if (min.size() > max.size() + 1) {
+            max.add(min.poll());
         }
     }
-
+    
     public double findMedian() {
-        if (left.size() > right.size()) {
-            return left.peek();
+        if (max.size() == min.size()) {
+            return (double) (max.peek() + min.peek()) / 2;
         }
-        return (left.peek() + right.peek()) / 2.0;
+        else if (max.size() > min.size()) {
+            return (double) max.peek();
+        }
+        else {
+            return (double) min.peek();
+        }
     }
 }
 
