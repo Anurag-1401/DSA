@@ -27,28 +27,55 @@
 //     }
 // }
 
+// class Solution {
+//     public List<Integer> postorderTraversal(TreeNode root) {
+//         List<Integer> res = new ArrayList<>();
+//         if (root == null) return res;
+
+//         Stack<TreeNode> st1 = new Stack<>();
+//         Stack<TreeNode> st2 = new Stack<>();
+
+//         st1.push(root);
+
+//         while (!st1.isEmpty()) {
+//             TreeNode curr = st1.pop();
+//             st2.push(curr);
+
+//             if (curr.left != null) st1.push(curr.left);
+//             if (curr.right != null) st1.push(curr.right);
+//         }
+
+//         while (!st2.isEmpty()) {
+//             res.add(st2.pop().val);
+//         }
+
+//         return res;
+//     }
+// }
+
+
 class Solution {
     public List<Integer> postorderTraversal(TreeNode root) {
         List<Integer> res = new ArrayList<>();
-        if (root == null) return res;
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode curr = root, lastVisited = null;
 
-        Stack<TreeNode> st1 = new Stack<>();
-        Stack<TreeNode> st2 = new Stack<>();
+        while (curr != null || !stack.isEmpty()) {
 
-        st1.push(root);
+            if (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            } else {
+                TreeNode peek = stack.peek();
 
-        while (!st1.isEmpty()) {
-            TreeNode curr = st1.pop();
-            st2.push(curr);
-
-            if (curr.left != null) st1.push(curr.left);
-            if (curr.right != null) st1.push(curr.right);
+                if (peek.right != null && lastVisited != peek.right) {
+                    curr = peek.right;
+                } else {
+                    res.add(peek.val);
+                    lastVisited = stack.pop();
+                }
+            }
         }
-
-        while (!st2.isEmpty()) {
-            res.add(st2.pop().val);
-        }
-
         return res;
     }
 }
