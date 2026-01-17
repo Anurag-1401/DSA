@@ -31,9 +31,7 @@ class Solution {
         if(distance==0){
             ans.add(root.val);
             return;
-        }
-
-        else{
+        } else{
             findChildrenAtKDistance(root.left,distance-1);
             findChildrenAtKDistance(root.right,distance-1);
         }
@@ -69,7 +67,7 @@ class Solution {
                 ans.add(root.val);
                 return 0;
             }
-            
+
             else{
                 findChildrenAtKDistance(root.left, k-rightDistance-1);
                 return rightDistance+1;
