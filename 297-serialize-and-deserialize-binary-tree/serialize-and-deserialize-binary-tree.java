@@ -9,34 +9,42 @@
  */
 public class Codec {
 
-   public List<Integer> serialize(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        dfsSerialize(root, res);
-        return res;
+   public String serialize(TreeNode root) {
+    StringBuilder sb = new StringBuilder();
+    dfsSerialize(root, sb);
+    return sb.toString();
+}
+
+private void dfsSerialize(TreeNode root, StringBuilder sb) {
+    if (root == null) {
+        sb.append("#,");
+        return;
     }
 
-    private void dfsSerialize(TreeNode root, List<Integer> res) {
-        if (root == null) {
-            res.add(Integer.MAX_VALUE);
-            return;
-        }
-        res.add(root.val);
-        dfsSerialize(root.left, res);
-        dfsSerialize(root.right, res);
+    sb.append(root.val).append(",");
+    dfsSerialize(root.left, sb);
+    dfsSerialize(root.right, sb);
+    }   
+
+    public TreeNode deserialize(String data) {
+    String[] arr = data.split(",");
+    return dfsDeserialize(arr, new int[1]);
+}
+
+private TreeNode dfsDeserialize(String[] arr, int[] index) {
+
+    if (arr[index[0]].equals("#")) {
+        index[0]++;
+        return null;
     }
 
-    public TreeNode deserialize(List<Integer> data) {
-        return dfsDeserialize(data, new int[1]);
+    TreeNode root = new TreeNode(Integer.parseInt(arr[index[0]++]));
+    root.left = dfsDeserialize(arr, index);
+    root.right = dfsDeserialize(arr, index);
+
+    return root;
     }
 
-    private TreeNode dfsDeserialize(List<Integer> data, int[] index) {
-        int cur = data.get(index[0]++);
-        if (cur == Integer.MAX_VALUE) return null;
-        TreeNode root = new TreeNode(cur);
-        root.left = dfsDeserialize(data, index);
-        root.right = dfsDeserialize(data, index);
-        return root;
-    }
 }
 
 // Your Codec object will be instantiated and called as such:
