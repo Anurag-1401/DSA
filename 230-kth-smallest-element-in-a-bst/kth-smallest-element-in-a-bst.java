@@ -13,23 +13,48 @@
  *     }
  * }
  */
-class Solution {
+
+ class Solution {
+    int ans = -1;
+    int count = 0;
     public int kthSmallest(TreeNode root, int k) {
-        Stack<TreeNode> st = new Stack<>();
-        TreeNode curr = root;
+        inorder(root,k);
+        return ans;
+    }
 
-        while(curr!=null || !st.isEmpty()){
-            while(curr!=null){
-                st.push(curr);
-                curr = curr.left;
-            }
+    public void inorder(TreeNode root , int k){
+        if(root == null ) return;
 
-            curr = st.pop();
-            k--;
-            if(k == 0) return curr.val;
+        inorder(root.left,k);
 
-            curr = curr.right;
+        count++;
+
+        if(count == k){
+            ans = root.val;
+            return;
         }
-        return -1;
+
+        inorder(root.right,k);  
     }
 }
+
+// class Solution {
+//     public int kthSmallest(TreeNode root, int k) {
+//         Stack<TreeNode> st = new Stack<>();
+//         TreeNode curr = root;
+
+//         while(curr!=null || !st.isEmpty()){
+//             while(curr!=null){
+//                 st.push(curr);
+//                 curr = curr.left;
+//             }
+
+//             curr = st.pop();
+//             k--;
+//             if(k == 0) return curr.val;
+
+//             curr = curr.right;
+//         }
+//         return -1;
+//     }
+// }
