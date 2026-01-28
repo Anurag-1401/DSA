@@ -1,52 +1,80 @@
 class Trie {
-    
-    TrieNode root;
-
-    class TrieNode{
-        TrieNode[] children;
-        boolean isEnd;
-
-        TrieNode(){
-            children = new TrieNode[26];
-            isEnd = false;
-        }
-    }
+    Node root; 
 
     public Trie() {
-        root = new TrieNode();
+        root = new Node();
     }
     
     public void insert(String word) {
-        TrieNode curr = root;
-
-        for(char c:word.toCharArray()){
-            int i = c-'a';
-            if(curr.children[i] == null) curr.children[i] = new TrieNode();
-            curr = curr.children[i];
-        }
-        curr.isEnd = true;
+        root.insert(word, 0);
     }
     
     public boolean search(String word) {
-        TrieNode curr = root;
-
-        for(char c:word.toCharArray()){
-            int i = c-'a';
-            if(curr.children[i] == null) return false;
-            curr = curr.children[i];
-        }
-        return curr.isEnd;
+        return root.search(word, 0);
     }
     
     public boolean startsWith(String prefix) {
-        TrieNode curr = root;
+        return root.startsWith(prefix, 0);
+    }
+}
 
-        for(char c:prefix.toCharArray()){
-            int i = c-'a';
-            if(curr.children[i] == null) return false;
-            curr = curr.children[i];
+class Node {
+    Node[] nodes;
+    boolean isEnd;
+
+    public Node(){
+        nodes = new Node[26];
+    }
+
+    public void insert(String word, int index){
+        if(index >= word.length()){
+            return;
         }
-        return true;
+
+        int nodeIndex = word.charAt(index) - 'a';
+        if(nodes[nodeIndex] == null){
+            nodes[nodeIndex]  = new Node();
+        }
+
+        if(index == word.length() - 1){
+            nodes[nodeIndex].isEnd = true;
+        } 
+
+        nodes[nodeIndex].insert(word, index + 1);
+    }
+
+    public boolean search(String word, int index){
+        if(index >= word.length()){
+            return false;
+        }
+
+        Node node = nodes[word.charAt(index) - 'a'];
+        if(node == null){
+            return false;
+        }
+
+        if(index == word.length() - 1 && node.isEnd){
+            return true;
+        }
+
+        return node.search(word, index + 1);
+    }
+
+    public boolean startsWith(String prefix, int index){
+        if(index >= prefix.length()){
+            return false;
+        }
+
+        Node node = nodes[prefix.charAt(index) - 'a'];
+        if(node == null){
+            return false;
+        }
+
+        if(index == prefix.length() - 1){
+            return true;
+        }
+
+        return node.startsWith(prefix, index + 1);
     }
 }
 
