@@ -1,52 +1,38 @@
 class Solution {
-
-    static class TrieNode {
-        TrieNode[] child = new TrieNode[2];
-    }
-
-    static class Trie {
-        TrieNode root = new TrieNode();
-
-        void insert(int num) {
-            TrieNode node = root;
-            for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
-                if (node.child[bit] == null) {
-                    node.child[bit] = new TrieNode();
-                }
-                node = node.child[bit];
-            }
-        }
-
-        int getMaxXor(int num) {
-            TrieNode node = root;
-            int maxXor = 0;
-
-            for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
-                int opposite = 1 - bit;
-
-                if (node.child[opposite] != null) {
-                    maxXor |= (1 << i);
-                    node = node.child[opposite];
-                } else {
-                    node = node.child[bit];
-                }
-            }
-            return maxXor;
-        }
-    }
-
     public int findMaximumXOR(int[] nums) {
-        Trie trie = new Trie();
-        int max = 0;
+        if (nums == null || nums.length < 2) return 0;
 
-        trie.insert(nums[0]);
+        int max = 0; 
+        for (int num : nums) max = Math.max(max, num);
+        int mask = Integer.highestOneBit(max); 
 
-        for (int i = 1; i < nums.length; i++) {
-            max = Math.max(max, trie.getMaxXor(nums[i]));
-            trie.insert(nums[i]);
+        int prefixMask = 0; 
+        int answer = 0; 
+
+        while (mask != 0) {
+            prefixMask |= mask; 
+            int candidate = answer | mask;  
+            if (canXor(nums, prefixMask, candidate)) {
+                answer = candidate; 
+            } 
+
+            mask >>= 1; 
+        } 
+
+        return answer; 
+    }
+
+    private boolean canXor(int[] nums, int prefixMask, int candidate) {
+        HashSet<Integer> seen = new HashSet<>(nums.length); 
+        for (int num : nums) {
+            int prefix = num & prefixMask; 
+            if (seen.contains(prefix ^ candidate)) {
+                return true;
+            }
+
+            seen.add(prefix); 
         }
-        return max;
+
+        return false; 
     }
 }
