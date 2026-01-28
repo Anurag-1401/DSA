@@ -1,43 +1,48 @@
-import java.util.*;
-
 class Solution {
-
-    // Binary Trie Node
-    static class TrieNode {
-        TrieNode[] child = new TrieNode[2];
+    static class Node{
+        Node left, right;
     }
 
-    static class Trie {
-        TrieNode root = new TrieNode();
+    Node root = new Node();
 
-        void insert(int num) {
-            TrieNode node = root;
-            for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
-                if (node.child[bit] == null) {
-                    node.child[bit] = new TrieNode();
-                }
-                node = node.child[bit];
+    public void insert(int num){
+        Node node = root;
+        for(int i=31; i>=0; i--){
+            int bit = (num >> i) & 1;
+            if (bit == 0) {
+                if (node.left == null) node.left = new Node();
+                node = node.left;
+            } else {
+                if (node.right == null) node.right = new Node();
+                node = node.right;
             }
         }
+    }
 
-        int maxXor(int num) {
-            TrieNode node = root;
-            int ans = 0;
+    public int getMax(int num){
+        Node node = root;
+        int max = 0;
 
-            for (int i = 31; i >= 0; i--) {
-                int bit = (num >> i) & 1;
-                int opposite = 1 - bit;
+        for(int i=31;i>=0;i--){
+            int bit = (num >> i) & 1;
 
-                if (node.child[opposite] != null) {
-                    ans |= (1 << i);
-                    node = node.child[opposite];
+            if (bit == 0) {
+                if (node.right != null) {
+                    max |= (1 << i);
+                    node = node.right;
                 } else {
-                    node = node.child[bit];
+                    node = node.left;
+                }
+            } else {
+                if (node.left != null) {
+                    max |= (1 << i);
+                    node = node.left;
+                } else {
+                    node = node.right;
                 }
             }
-            return ans;
         }
+        return max;
     }
 
     public int[] maximizeXor(int[] nums, int[][] queries) {
@@ -46,36 +51,32 @@ class Solution {
         int q = queries.length;
         int[][] offline = new int[q][3];
 
-        for (int i = 0; i < q; i++) {
-            offline[i][0] = queries[i][1]; // mi
-            offline[i][1] = queries[i][0]; // xi
-            offline[i][2] = i;             // original index
+        for(int i=0;i<q;i++){
+            offline[i][0] = queries[i][1];      //mi
+            offline[i][1] = queries[i][0];      //xi
+            offline[i][2] = i;                  //original index
         }
 
-        Arrays.sort(offline, Comparator.comparingInt(a -> a[0]));
-
-        Trie trie = new Trie();
-        int idx = 0;
+        Arrays.sort(offline, (a, b) -> a[0] - b[0]);
         int[] ans = new int[q];
 
-        for (int[] query : offline) {
-            int mi = query[0];
-            int xi = query[1];
-            int qIndex = query[2];
+        int idx = 0;
+        for(int i=0;i<q;i++){
+            int mi = offline[i][0];
+            int xi = offline[i][1];
+            int qi = offline[i][2];
 
-            // Insert nums <= mi
-            while (idx < nums.length && nums[idx] <= mi) {
-                trie.insert(nums[idx]);
+            while(idx < nums.length && nums[idx] <= mi){
+                insert(nums[idx]);
                 idx++;
             }
 
-            if (idx == 0) {
-                ans[qIndex] = -1; // no valid numbers
-            } else {
-                ans[qIndex] = trie.maxXor(xi);
+            if(idx == 0){
+                ans[qi] = -1;
+            }else{
+                ans[qi] = getMax(xi);
             }
         }
-
         return ans;
     }
 }
