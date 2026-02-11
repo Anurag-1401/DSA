@@ -1,49 +1,60 @@
 class Solution {
-    public String shortestCommonSupersequence(String str1, String str2) {
+    public String shortestCommonSupersequence(String text1, String text2) {
 
-        int n = str1.length();
-        int m = str2.length();
 
-        int[][] dp = new int[n + 1][m + 1];
+        char[] a = text1.toCharArray();
+        char[] b = text2.toCharArray();
+        int[][] dp = new int[a.length+1][b.length+1];
+    
 
-        // Build LCS table
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-
-                if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
-                    dp[i][j] = 1 + dp[i - 1][j - 1];
+        for (int i = 1; i<dp.length; i++){
+            for (int j = 1; j<dp[0].length; j++){
+                if (a[i-1]==b[j-1]){
+                    dp[i][j] = dp[i-1][j-1] + 1;
                 } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    dp[i][j] = Math.max(dp[i][j-1], dp[i-1][j]);
                 }
+
+
             }
         }
 
-        // Backtrack to build SCS
-        StringBuilder res = new StringBuilder();
+        
+        int l =  text1.length()+text2.length()-dp[a.length][b.length];
+        int m = text1.length(), n = text2.length();
+        char[] chr = new char[l];
+        while (m>0 && n>0){
+            char cur;
+            if (text1.charAt(m-1) == text2.charAt(n-1)){
+                cur = text1.charAt(m-1);
+                m--;
+                n--;
+            } else if (dp[m-1][n] > dp[m][n-1]){
+                cur = text1.charAt(m-1);
+                m--;
+                
 
-        int i = n, j = m;
-
-        while (i > 0 && j > 0) {
-
-            if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
-                res.append(str1.charAt(i - 1));
-                i--;
-                j--;
-            } 
-            else if (dp[i - 1][j] > dp[i][j - 1]) {
-                res.append(str1.charAt(i - 1));
-                i--;
-            } 
-            else {
-                res.append(str2.charAt(j - 1));
-                j--;
+            } else {
+                cur = text2.charAt(n-1);
+                n--;
             }
+
+            chr[--l] = cur;
+
+
+        }
+        while (m-->0){
+            chr[--l]=text1.charAt(m);
+            //m--;
+        }
+        while (n-->0){
+            chr[--l]=text2.charAt(n);
+            //m--;
         }
 
-        // Add leftovers
-        while (i > 0) res.append(str1.charAt(--i));
-        while (j > 0) res.append(str2.charAt(--j));
+        return new String(chr);
 
-        return res.reverse().toString();
+        
     }
+
 }
