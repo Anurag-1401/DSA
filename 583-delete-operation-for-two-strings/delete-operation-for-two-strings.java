@@ -1,23 +1,36 @@
 class Solution {
-    public int minDistance(String word1, String word2) {
-        int n = word1.length();
-        int m = word2.length();
+    public int minDistance(String text1, String text2) {
 
-        int[][] dp = new int[n + 1][m + 1];
+        char[] A = text1.toCharArray();
+        char[] B = text2.toCharArray();
 
-        // Compute LCS
+        int n = A.length;
+        int m = B.length;
+
+        int[] grid = new int[m + 1];
+
+        int diag, temp;
+
         for (int i = 1; i <= n; i++) {
+
+            diag = 0;
+
             for (int j = 1; j <= m; j++) {
-                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
-                    dp[i][j] = 1 + dp[i - 1][j - 1];
+
+                temp = grid[j];
+
+                if (A[i - 1] == B[j - 1]) {
+                    grid[j] = diag + 1;
                 } else {
-                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    grid[j] = Math.max(grid[j], grid[j - 1]);
                 }
+
+                diag = temp;
             }
         }
 
-        int lcs = dp[n][m];
+        int lcs = grid[m];
 
-        return (n - lcs) + (m - lcs);
+        return n + m - 2 * lcs;
     }
 }
