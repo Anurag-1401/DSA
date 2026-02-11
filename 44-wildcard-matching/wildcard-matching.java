@@ -1,40 +1,26 @@
 class Solution {
     public boolean isMatch(String s, String p) {
-
-        int n = s.length();
-        int m = p.length();
-
-        boolean[] grid = new boolean[m + 1];
-
-        // Base case: empty string vs pattern
-        grid[0] = true;
-
-        // Handle patterns like "*", "**", "***"
-        for (int j = 1; j <= m; j++) {
-            if (p.charAt(j - 1) == '*')
-                grid[j] = grid[j - 1];
-        }
-
-        for (int i = 1; i <= n; i++) {
-
-            boolean[] curr = new boolean[m + 1];
-            curr[0] = false; // non-empty string vs empty pattern
-
-            for (int j = 1; j <= m; j++) {
-
-                char pc = p.charAt(j - 1);
-
-                if (pc == '*') {
-                    curr[j] = curr[j - 1] || grid[j];
-                }
-                else if (pc == '?' || pc == s.charAt(i - 1)) {
-                    curr[j] = grid[j - 1];
-                }
+        int si = 0, pi = 0, match = 0, star = -1;
+        int sn = s.length(), pn = p.length();
+        while (si < sn) {
+            if (pi < pn && (p.charAt(pi) == '?' || p.charAt(pi) == s.charAt(si))) {
+                si++;
+                pi++;
+            } else if (pi < pn && p.charAt(pi) == '*') {
+                star = pi;
+                match = si;
+                pi++;
+            } else if (star != -1) {
+                pi = star + 1;
+                match++;
+                si = match;
+            } else {
+                return false;
             }
-
-            grid = curr;
         }
-
-        return grid[m];
+        while (pi < pn && p.charAt(pi) == '*') {
+            pi++;
+        }
+        return pi == pn;
     }
 }
