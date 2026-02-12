@@ -2,16 +2,32 @@ class Solution {
     public int maxProfit(int k, int[] prices) {
 
         int n = prices.length;
-        int[] profits = new int[n];
-        for (int i = 1; i <= k ; i++) {
-            int max = 0;
+
+        if (k >= n / 2) {
             int profit = 0;
-            for( int j = n-1; j >= 0; j--) {
-                max = Math.max(max, profits[j]+prices[j]);
-                profit = Math.max(profit, max-prices[j]);
-                profits[j] = profit;
+            for (int i = 1; i < n; i++) {
+                if (prices[i] > prices[i - 1])
+                    profit += prices[i] - prices[i - 1];
+            }
+            return profit;
+        }
+
+        int[] buy = new int[k + 1];
+        int[] sell = new int[k + 1];
+
+        for (int t = 1; t <= k; t++) {
+            buy[t] = Integer.MIN_VALUE;
+        }
+
+        for (int price : prices) {
+
+            for (int t = 1; t <= k; t++) {
+
+                buy[t] = Math.max(buy[t], sell[t - 1] - price);
+                sell[t] = Math.max(sell[t], buy[t] + price);
             }
         }
-        return profits[0];
+
+        return sell[k];
     }
 }
