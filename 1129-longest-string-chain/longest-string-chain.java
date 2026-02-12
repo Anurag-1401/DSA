@@ -1,45 +1,38 @@
-import java.util.*;
-
 class Solution {
-    public int longestStrChain(String[] words) {
+    public int longestStrChain(String[] a) {
+        Arrays.sort(a,(x,y)->x.length()-y.length());
+        int n=a.length, dp[]=new int[n], max=1;
+        Arrays.fill(dp,1);
 
-        Arrays.sort(words, (a, b) -> a.length() - b.length());
+        for(int i=1;i<n;i++){
+            for(int j=0;j<i;j++){
+                if(a[j].length()+1<a[i].length()) continue;
+                if(a[j].length()+1>a[i].length()) break;
 
-        int n = words.length;
-        int[] dp = new int[n];
-        Arrays.fill(dp, 1);
-
-        int maxLen = 1;
-
-        for (int i = 0; i < n; i++) {
-
-            for (int prev = 0; prev < i; prev++) {
-
-                if (isPredecessor(words[prev], words[i])) {
-                    dp[i] = Math.max(dp[i], dp[prev] + 1);
+                if(isPredecessor(a[j],a[i])){
+                    dp[i]=Math.max(dp[i],dp[j]+1);
+                    max=Math.max(max,dp[i]);
                 }
             }
-
-            maxLen = Math.max(maxLen, dp[i]);
         }
-
-        return maxLen;
+        return max;
     }
 
-    private boolean isPredecessor(String a, String b) {
-
-        if (b.length() != a.length() + 1) return false;
-
-        int i = 0, j = 0;
-
-        while (i < a.length() && j < b.length()) {
-
-            if (a.charAt(i) == b.charAt(j)) {
-                i++;
+    boolean isPredecessor(String a, String b){
+        int n1=a.length(), n2=b.length(), i=0, j=0;
+        boolean skipped=false;
+        
+        while(i<n1 && j<n2){
+            if(a.charAt(i)==b.charAt(j)){
+                ++i;
+                ++j;
             }
-            j++;
+            else{
+                if(skipped) return false;
+                skipped=true;
+                j++;
+            }
         }
-
-        return i == a.length();
+        return true;
     }
 }
