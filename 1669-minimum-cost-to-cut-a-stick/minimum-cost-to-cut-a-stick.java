@@ -1,34 +1,33 @@
 class Solution {
-    public int minCost(int stickLength, int[] cutPositions) {
-        int numberOfCuts = cutPositions.length;
-        Arrays.sort(cutPositions); 
+    public int minCost(int n, int[] cuts) {
+        int m = cuts.length;
+        int[] arr = new int[m + 2];
+        arr[0] = 0;
+        arr[m + 1] = n;
+        System.arraycopy(cuts, 0, arr, 1, m);
+        Arrays.sort(arr);
 
-        int[] allCuts = new int[numberOfCuts + 2];
-        allCuts[0] = 0;
+        int[][] dp = new int[m + 2][m + 2];
+        int[][] opt = new int[m + 2][m + 2];
 
-        for (int index = 0; index < numberOfCuts; index++) {
-            allCuts[index + 1] = cutPositions[index];
-        }
+        for (int len = 2; len <= m + 1; len++) {
+            for (int l = 0; l + len <= m + 1; l++) {
+                int r = l + len;
+                dp[l][r] = Integer.MAX_VALUE;
 
-        allCuts[numberOfCuts + 1] = stickLength;
- 
-        int[][] dp = new int[numberOfCuts + 2][numberOfCuts + 2];
-        
-        for (int segmentSize = 2; segmentSize < numberOfCuts + 2; segmentSize++) {
-            for (int start = 0; start + segmentSize < numberOfCuts + 2; start++) {
+                int start = (len == 2) ? l + 1 : opt[l][r - 1];
+                int end = (len == 2) ? r - 1 : opt[l + 1][r];
 
-                int end = start + segmentSize;
-                dp[start][end] = Integer.MAX_VALUE;
-                
-                for (int mid = start + 1; mid < end; mid++) {
-                    dp[start][end] = Math.min(
-                        dp[start][end],
-                        dp[start][mid] + dp[mid][end]
-                    );
+                for (int k = start; k <= end; k++) {
+                    int cost = dp[l][k] + dp[k][r] + arr[r] - arr[l];
+                    if (cost < dp[l][r]) {
+                        dp[l][r] = cost;
+                        opt[l][r] = k;
+                    }
                 }
-                dp[start][end] += allCuts[end] - allCuts[start];
             }
         }
-        return dp[0][numberOfCuts + 1];
+
+        return dp[0][m + 1];            
     }
 }
