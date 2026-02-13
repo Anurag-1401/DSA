@@ -1,41 +1,34 @@
-import java.util.*;
-
 class Solution {
-    public int minCost(int n, int[] cuts) {
+    public int minCost(int stickLength, int[] cutPositions) {
+        int numberOfCuts = cutPositions.length;
+        Arrays.sort(cutPositions); 
 
-        int m = cuts.length;
-
-        int[] allCuts = new int[m + 2];
+        int[] allCuts = new int[numberOfCuts + 2];
         allCuts[0] = 0;
-        allCuts[m + 1] = n;
 
-        for (int i = 0; i < m; i++) {
-            allCuts[i + 1] = cuts[i];
+        for (int index = 0; index < numberOfCuts; index++) {
+            allCuts[index + 1] = cutPositions[index];
         }
 
-        Arrays.sort(allCuts);
+        allCuts[numberOfCuts + 1] = stickLength;
+ 
+        int[][] dp = new int[numberOfCuts + 2][numberOfCuts + 2];
+        
+        for (int segmentSize = 2; segmentSize < numberOfCuts + 2; segmentSize++) {
+            for (int start = 0; start + segmentSize < numberOfCuts + 2; start++) {
 
-        int[][] dp = new int[m + 2][m + 2];
-
-        // Interval length
-        for (int len = 2; len < m + 2; len++) {
-
-            for (int i = 0; i + len < m + 2; i++) {
-
-                int j = i + len;
-                dp[i][j] = Integer.MAX_VALUE;
-
-                for (int k = i + 1; k < j; k++) {
-
-                    int cost = dp[i][k]
-                             + dp[k][j]
-                             + allCuts[j] - allCuts[i];
-
-                    dp[i][j] = Math.min(dp[i][j], cost);
+                int end = start + segmentSize;
+                dp[start][end] = Integer.MAX_VALUE;
+                
+                for (int mid = start + 1; mid < end; mid++) {
+                    dp[start][end] = Math.min(
+                        dp[start][end],
+                        dp[start][mid] + dp[mid][end]
+                    );
                 }
+                dp[start][end] += allCuts[end] - allCuts[start];
             }
         }
-
-        return dp[0][m + 1];
+        return dp[0][numberOfCuts + 1];
     }
 }
