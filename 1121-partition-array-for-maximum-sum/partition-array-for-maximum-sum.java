@@ -1,29 +1,33 @@
 class Solution {
     public int maxSumAfterPartitioning(int[] arr, int k) {
-
         int n = arr.length;
-        int[] dp = new int[n + 1];
 
-        // Build from end → start
-        for (int i = n - 1; i >= 0; i--) {
+        // tabulation
+        int[] tab = new int[n+1];
 
-            int maxVal = 0;
-            int best = 0;
+        for(int index = n-1; index >= 0; index--){
+            if(index+k >= n){
+                int maxEle = 0;
+            
+                for(int i = index; i < n; i++)
+                    maxEle = Math.max(maxEle, arr[i]);
 
-            for (int j = i; j < n && j < i + k; j++) {
+                tab[index] = (n-index)*maxEle;
+            } else {
+                int currMax = 0;
+                int limit = index+k;
+                int ans = 0;
 
-                maxVal = Math.max(maxVal, arr[j]);
+                for(int mid = index; mid < limit; mid++){
+                    currMax = Math.max(currMax, arr[mid]);
+                    int tempAns = ((mid-index+1)*currMax) + tab[mid+1];
+                    ans = Math.max(ans, tempAns);
+                }
 
-                int len = j - i + 1;
-
-                int sum = maxVal * len + dp[j + 1];
-
-                best = Math.max(best, sum);
+                tab[index] = ans;
             }
-
-            dp[i] = best;
         }
 
-        return dp[0];
+        return tab[0];
     }
 }
