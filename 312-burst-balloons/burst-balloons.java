@@ -1,37 +1,31 @@
 class Solution {
     public int maxCoins(int[] nums) {
-
         int n = nums.length;
-
-        // Add boundaries
         int[] arr = new int[n + 2];
-        arr[0] = 1;
-        arr[n + 1] = 1;
+        arr[0] = arr[n + 1] = 1;
 
-        for (int i = 0; i < n; i++) {
-            arr[i + 1] = nums[i];
-        }
+        System.arraycopy(nums, 0, arr, 1, n);
 
         int[][] dp = new int[n + 2][n + 2];
 
-        // Interval length
-        for (int len = 1; len <= n; len++) {
+        for (int len = 2; len < n + 2; len ++) {
+            int end = n + 2 - len;
+            for (int left = 0; left < end; left ++) {
+                int right = left + len;
+                int leftVal = arr[left];
+                int rightVal = arr[right];
 
-            for (int i = 1; i <= n - len + 1; i++) {
+                int max = 0;
 
-                int j = i + len - 1;
-
-                for (int k = i; k <= j; k++) {
-
-                    int coins = dp[i][k - 1]
-                              + dp[k + 1][j]
-                              + arr[i - 1] * arr[k] * arr[j + 1];
-
-                    dp[i][j] = Math.max(dp[i][j], coins);
+                for (int k = left + 1; k < right; k ++) {
+                    int temp = leftVal * arr[k] * rightVal + dp[left][k] + dp[k][right];
+                    max = max > temp ? max : temp;
                 }
+
+                dp[left][right] = max;
             }
         }
 
-        return dp[1][n];
+        return dp[0][n + 1];
     }
 }
