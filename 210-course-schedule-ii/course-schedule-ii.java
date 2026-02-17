@@ -1,35 +1,56 @@
 class Solution {
-    private int[] next, to, head, degree, ans;
-    private int nodeIndex = 0, index = 0;
-    private void add(int a, int b) {
-        next[nodeIndex] = head[a];
-        to[nodeIndex] = b;
-        head[a] = nodeIndex++;
-    }
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        int m = prerequisites.length;
-        this.degree = new int[numCourses];
-        this.ans = new int[numCourses];
-        this.head = new int[numCourses];
-        this.next = new int[m];
-        this.to = new int[m];
-        Arrays.fill(head, -1);
+        List<Integer>[] prereq = new List[numCourses];
+        for (int i=0; i<numCourses; i++) {
+            prereq[i] = new ArrayList<>();
+        }
+        for (int[] prerequisite : prerequisites) {
+            prereq[prerequisite[0]].add(prerequisite[1]);
+        }
+        int[] res = new int[numCourses];
+        int[] run_idx = new int[1];
 
-        for(int[] req : prerequisites) {
-            degree[req[0]]++;
-            add(req[1], req[0]);
+        int[] visited = new int[numCourses];
+        for (int i=0; i<numCourses; i++) {
+            if (visited[i] != 0) {
+                continue;
+            }
+            if (!dfs(i, visited, prereq, res, run_idx)) {
+                return new int[0];
+            }
         }
 
-        for(int i = 0; i < numCourses; i++) {
-            if(degree[i] == 0) dfs(i);
+        for (int i=0; i<numCourses; i++) {
+            if (visited[i] != 2) {
+                res[run_idx[0]++] = i;
+            }
         }
-        return index == numCourses ? ans : new int[0];
+        
+        return res;
     }
-    private void dfs(int i) {
-        degree[i] = -1;
-        ans[index++] = i;
-        for(int j = head[i]; j != -1; j = next[j]) {
-            if(--degree[to[j]] == 0) dfs(to[j]);
+
+    // Normal DFS
+    public boolean dfs(int root, int[] visited, List<Integer>[] prereq, int[] res, int[] run_idx) {
+        visited[root] = 1;
+
+
+        List<Integer> neighs = prereq[root];
+
+        for (int neigh : neighs) {
+            if (visited[neigh] == 1) {
+                return false;
+            }
+            if (visited[neigh] == 2) {
+                continue;
+            }
+            boolean neigh_dfs = dfs(neigh, visited, prereq, res, run_idx);
+            if (!neigh_dfs) {
+                return false;
+            }
         }
+
+        visited[root] = 2;
+        res[run_idx[0]++] = root;
+        return true;
     }
 }
