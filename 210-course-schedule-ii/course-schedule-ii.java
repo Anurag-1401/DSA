@@ -1,50 +1,35 @@
 class Solution {
+    private int[] next, to, head, degree, ans;
+    private int nodeIndex = 0, index = 0;
+    private void add(int a, int b) {
+        next[nodeIndex] = head[a];
+        to[nodeIndex] = b;
+        head[a] = nodeIndex++;
+    }
     public int[] findOrder(int numCourses, int[][] prerequisites) {
+        int m = prerequisites.length;
+        this.degree = new int[numCourses];
+        this.ans = new int[numCourses];
+        this.head = new int[numCourses];
+        this.next = new int[m];
+        this.to = new int[m];
+        Arrays.fill(head, -1);
 
-        List<List<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < numCourses; i++)
-            adj.add(new ArrayList<>());
-
-        int[] indegree = new int[numCourses];
-
-        // Build graph
-        for (int[] p : prerequisites) {
-            int course = p[0];
-            int prereq = p[1];
-
-            adj.get(prereq).add(course); // prereq → course
-            indegree[course]++;
+        for(int[] req : prerequisites) {
+            degree[req[0]]++;
+            add(req[1], req[0]);
         }
 
-        Queue<Integer> q = new LinkedList<>();
-
-        // Add nodes with indegree 0
-        for (int i = 0; i < numCourses; i++) {
-            if (indegree[i] == 0)
-                q.offer(i);
+        for(int i = 0; i < numCourses; i++) {
+            if(degree[i] == 0) dfs(i);
         }
-
-        int[] order = new int[numCourses];
-        int idx = 0;
-
-        // Kahn's BFS
-        while (!q.isEmpty()) {
-
-            int node = q.poll();
-            order[idx++] = node;
-
-            for (int neigh : adj.get(node)) {
-                indegree[neigh]--;
-
-                if (indegree[neigh] == 0)
-                    q.offer(neigh);
-            }
+        return index == numCourses ? ans : new int[0];
+    }
+    private void dfs(int i) {
+        degree[i] = -1;
+        ans[index++] = i;
+        for(int j = head[i]; j != -1; j = next[j]) {
+            if(--degree[to[j]] == 0) dfs(to[j]);
         }
-
-        // Cycle check
-        if (idx != numCourses)
-            return new int[0];
-
-        return order;
     }
 }
