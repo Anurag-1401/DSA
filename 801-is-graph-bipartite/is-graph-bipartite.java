@@ -1,35 +1,40 @@
 class Solution {
+
+    public boolean solve(int node, int parent, boolean flag,
+                         int[][] graph, int[] color, boolean[] visited) {
+
+        color[node] = flag ? 1 : 0;
+        visited[node] = true;
+
+        for (int adj : graph[node]) {
+
+            if (!visited[adj]) {
+                if (!solve(adj, node, !flag, graph, color, visited)) {
+                    return false;
+                }
+            } 
+            else if (color[adj] == color[node]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean isBipartite(int[][] graph) {
+        int n = graph.length;
 
-        int V = graph.length;
-        int[] color = new int[V];
+        int[] color = new int[n];
+        boolean[] visited = new boolean[n];
 
-        Arrays.fill(color, -1); // -1 = uncolored
+        // initialize color with -1 (optional but good practice)
+        for (int i = 0; i < n; i++) {
+            color[i] = -1;
+        }
 
-        for (int start = 0; start < V; start++) {
-
-            if (color[start] != -1) continue;
-
-            Queue<Integer> q = new LinkedList<>();
-            q.offer(start);
-            color[start] = 0;
-
-            while (!q.isEmpty()) {
-
-                int node = q.poll();
-
-                for (int neigh : graph[node]) {
-
-                    // Not colored → assign opposite color
-                    if (color[neigh] == -1) {
-                        color[neigh] = 1 - color[node];
-                        q.offer(neigh);
-                    }
-
-                    // Same color → not bipartite
-                    else if (color[neigh] == color[node]) {
-                        return false;
-                    }
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                if (!solve(i, i, false, graph, color, visited)) {
+                    return false;
                 }
             }
         }
