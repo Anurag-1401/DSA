@@ -1,72 +1,46 @@
-import java.util.*;
-
 class Solution {
 
-    int[] parent;
-    int[] size;
-
     public int makeConnected(int n, int[][] connections) {
+        if (connections.length < n - 1) return -1;
 
-        // Step 1: Minimum edges check
-        if (connections.length < n - 1)
-            return -1;
+        int[] parent = new int[n];
+        int[] rank = new int[n];
 
-        // Step 2: Initialize DSU
-        parent = new int[n];
-        size = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
 
-        for (int i = 0; i < n; i++) {
-            parent[i] = i;
-            size[i] = 1;
-        }
+        int components = n;
 
-        // Step 3: Union edges
-        for (int[] edge : connections) {
-
-            int u = edge[0];
-            int v = edge[1];
-
-            if (!isConnected(u, v)) {
-                unionBySize(u, v);
+        for (int[] c : connections) {
+            if (union(c[0], c[1], parent, rank)) {
+                components--;
             }
-        }
-
-        // Step 4: Count components
-        int components = 0;
-
-        for (int i = 0; i < n; i++) {
-            if (findParent(i) == i)
-                components++;
         }
 
         return components - 1;
     }
 
-    private int findParent(int node) {
-
-        if (parent[node] == node)
-            return node;
-
-        return parent[node] = findParent(parent[node]); // path compression
-    }
-
-    private boolean isConnected(int u, int v) {
-        return findParent(u) == findParent(v);
-    }
-
-    private void unionBySize(int u, int v) {
-
-        int pu = findParent(u);
-        int pv = findParent(v);
-
-        if (pu == pv) return;
-
-        if (size[pu] < size[pv]) {
-            parent[pu] = pv;
-            size[pv] += size[pu];
-        } else {
-            parent[pv] = pu;
-            size[pu] += size[pv];
+    private int find(int x, int[] parent) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x], parent);
         }
+        return parent[x];
+    }
+
+    private boolean union(int x, int y, int[] parent, int[] rank) {
+        int px = find(x, parent);
+        int py = find(y, parent);
+
+        if (px == py) return false;
+
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[py] = px;
+            rank[px]++;
+        }
+
+        return true;
     }
 }
