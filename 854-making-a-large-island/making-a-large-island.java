@@ -1,59 +1,122 @@
-class Solution {
+class UnionFind {
+    class Node {
+        Node parent;
+        int size;
 
+        Node() {
+            parent = this;
+            size = 1;
+        }
+    }
+
+    Node[][] nodes;
     int n;
-    int[][] grid;
-    Map<Integer, Integer> sizeMap = new HashMap<>();
 
+    UnionFind(int n) {
+        this.nodes = new Node[n][n];
+        this.n = n;
+    }
+
+    Node find(Node x) {
+        while (x.parent != x) {
+            Node p = x.parent;
+            x.parent = p.parent;
+            x = p;
+        }
+
+        return x;
+    }
+
+    Node find(int i, int j) {
+        return find(nodes[i][j]);
+    }
+
+    Node union(Node x, Node y) {
+        x = find(x);
+        y = find(y);
+
+        if (x == y) return x;
+
+        if (x.size > y.size) {
+            y.parent = x;
+            x.size += y.size;
+            return x;
+        }
+        else {
+            x.parent = y;
+            y.size += x.size;
+            return y;
+        }
+    }
+
+    int add(int i, int j) {
+        Node x = nodes[i][j] = new Node();
+
+        if (i > 0 && nodes[i-1][j] != null) {
+            x = union(x, nodes[i-1][j]);
+        }
+        if (j > 0 && nodes[i][j-1] != null) {
+            x = union(x, nodes[i][j-1]);
+        }
+        if (i < n-1 && nodes[i+1][j] != null) {
+            x = union(x, nodes[i+1][j]);
+        }
+        if (j < n-1 && nodes[i][j+1] != null) {
+            x = union(x, nodes[i][j+1]);
+        }
+
+        return x.size;
+    }
+
+
+
+    int connect(int i, int j) {
+        Node up = i > 0 && nodes[i-1][j] != null ? find(nodes[i-1][j]) : null;
+        Node left = j > 0 && nodes[i][j-1] != null ? find(nodes[i][j-1]) : null;
+        Node down = i < n-1 && nodes[i+1][j] != null ? find(nodes[i+1][j]) : null;
+        Node right = j < n-1 && nodes[i][j+1] != null ? find(nodes[i][j+1]) : null;
+        int size = 1;
+
+        if (up != null) {
+            size += up.size;
+        }
+        if (left != null && left != up) {
+            size += left.size;
+        }
+        if (down != null && down != up && down != left) {
+            size += down.size;
+        }
+        if (right != null && right != up && right != left && right != down) {
+            size += right.size;
+        }
+
+        return size;
+    }
+}
+
+class Solution {
     public int largestIsland(int[][] grid) {
-
-        this.grid = grid;
-        this.n = grid.length;
-
-        int id = 2; // Start labeling from 2
+        int n = grid.length;
+        UnionFind uf = new UnionFind(n);
         int max = 0;
 
-        // Step 1: Label islands
-        for (int r = 0; r < n; r++) {
-            for (int c = 0; c < n; c++) {
-
-                if (grid[r][c] == 1) {
-                    int size = dfs(r, c, id);
-                    sizeMap.put(id, size);
-                    max = Math.max(max, size);
-                    id++;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    int area = uf.add(i, j);
+                    if (area > max) max = area;
                 }
             }
         }
 
-        // Step 2: Try flipping zeros
-        for (int r = 0; r < n; r++) {
-            for (int c = 0; c < n; c++) {
+        if (max == n*n) return n*n;
+        else if (max == 0) return 1;
 
-                if (grid[r][c] == 0) {
-
-                    Set<Integer> seen = new HashSet<>();
-                    int newSize = 1;
-
-                    int[][] dir = {{1,0},{-1,0},{0,1},{0,-1}};
-
-                    for (int[] d : dir) {
-
-                        int nr = r + d[0];
-                        int nc = c + d[1];
-
-                        if (nr >= 0 && nc >= 0 && nr < n && nc < n
-                                && grid[nr][nc] > 1) {
-
-                            int neighId = grid[nr][nc];
-
-                            if (!seen.contains(neighId)) {
-                                newSize += sizeMap.get(neighId);
-                                seen.add(neighId);
-                            }
-                        }
-                    }
-
-                    max = Math.max(max, newSize);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 0) {
+                    int area = uf.connect(i, j);
+                    if (area > max) max = area;
                 }
             }
         }
@@ -61,17 +124,4 @@ class Solution {
         return max;
     }
 
-    private int dfs(int r, int c, int id) {
-
-        if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != 1)
-            return 0;
-
-        grid[r][c] = id;
-
-        return 1
-            + dfs(r + 1, c, id)
-            + dfs(r - 1, c, id)
-            + dfs(r, c + 1, id)
-            + dfs(r, c - 1, id);
-    }
 }
