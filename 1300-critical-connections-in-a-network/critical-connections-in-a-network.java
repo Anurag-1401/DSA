@@ -1,58 +1,37 @@
 class Solution {
-
-    int timer = 0;
-    List<List<Integer>> adj;
-    int[] tin, low;
-    boolean[] visited;
-    List<List<Integer>> bridges = new ArrayList<>();
-
     public List<List<Integer>> criticalConnections(int n, List<List<Integer>> connections) {
-
-        adj = new ArrayList<>();
-        for (int i = 0; i < n; i++)
-            adj.add(new ArrayList<>());
-
-        for (List<Integer> e : connections) {
-            int u = e.get(0);
-            int v = e.get(1);
-
-            adj.get(u).add(v);
-            adj.get(v).add(u);
+        List<Integer>[] adjList = new ArrayList[n];
+        Integer[] ranks = new Integer[n];
+        for(int i = 0 ; i < n ; i++){
+            adjList[i] = new ArrayList<Integer>();
+            ranks[i] = null;
         }
-
-        tin = new int[n];
-        low = new int[n];
-        visited = new boolean[n];
-
-        dfs(0, -1);
-
-        return bridges;
+        for(List<Integer> connection : connections){
+            Integer one = connection.get(0),two = connection.get(1);
+            adjList[one].add(two);
+            adjList[two].add(one);
+        }
+        List<List<Integer>> criticalConnections = new ArrayList<>();
+        checkAllEdges(adjList,ranks,0,0,criticalConnections);
+        return criticalConnections;
     }
-
-    private void dfs(int node, int parent) {
-
-        visited[node] = true;
-        tin[node] = low[node] = timer++;
-
-        for (int neigh : adj.get(node)) {
-
-            if (neigh == parent) continue;
-
-            if (!visited[neigh]) {
-
-                dfs(neigh, node);
-
-                low[node] = Math.min(low[node], low[neigh]);
-
-                // Bridge condition ⭐
-                if (low[neigh] > tin[node]) {
-                    bridges.add(Arrays.asList(node, neigh));
-                }
+    private Integer checkAllEdges(List<Integer>[] adjList,Integer[] ranks,Integer currentNode,Integer currentRank,List<List<Integer>> criticalConnections){
+        if(ranks[currentNode] != null){
+            return ranks[currentNode];
+        }
+        ranks[currentNode] = currentRank;
+        int min = currentRank;
+        for(Integer next : adjList[currentNode]){
+            if(ranks[next] != null && ranks[next] == currentRank-1){
+                continue;
             }
-            else {
-                // Back edge
-                low[node] = Math.min(low[node], tin[neigh]);
+            int minRank = checkAllEdges(adjList,ranks,next,currentRank+1,criticalConnections);
+            if(minRank == currentRank+1){
+                criticalConnections.add(List.of(currentNode,next));
+            } else if (min > minRank){
+                min = minRank;
             }
         }
+        return min;
     }
 }
