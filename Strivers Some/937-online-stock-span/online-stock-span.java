@@ -1,33 +1,21 @@
 class StockSpanner {
-
-    static class Pair {
-        int price;
-        int span;
-
-        Pair(int p, int s) {
-            price = p;
-            span = s;
-        }
-    }
-
-    Stack<Pair> st;
-
+    private Stack<int[]> stk;
     public StockSpanner() {
-        st = new Stack<>();
+        stk=new Stack<>();      
     }
-
+    
     public int next(int price) {
-        int span = 1;
-
-        // Pop all prices ≤ current price
-        while (!st.isEmpty() && st.peek().price <= price) {
-            span += st.peek().span;
-            st.pop();
+        int count=1;
+        while(!stk.isEmpty() && stk.peek()[0]<=price){
+            count+=stk.pop()[1];
         }
-
-        // Push current pair
-        st.push(new Pair(price, span));
-
-        return span;
+        stk.push(new int[]{price, count});
+        return count;
     }
 }
+
+/**
+ * Your StockSpanner object will be instantiated and called as such:
+ * StockSpanner obj = new StockSpanner();
+ * int param_1 = obj.next(price);
+ */
