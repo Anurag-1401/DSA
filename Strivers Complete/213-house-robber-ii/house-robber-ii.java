@@ -8,7 +8,7 @@ class Solution {
     }
 
     private int robber(int[] n,int s,int e){
-        int prev2 = 0,prev1=0;
+        int prev2 = 0,prev1=0; 
 
         for(int i=s;i<=e;i++){
             int c = Math.max(n[i]+prev2,prev1);
