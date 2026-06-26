@@ -1,6 +1,6 @@
 class Solution {
     public List<String> generateBinaryStrings(int n) {
-        List<String> res = new ArrayList<>();
+        List<String> res = new ArrayList<>(); 
         solve(n,"",res);
         return res;
     }
