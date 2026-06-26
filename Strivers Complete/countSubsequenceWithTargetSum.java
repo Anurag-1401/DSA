@@ -1,7 +1,7 @@
 class Solution {
     public int countSubsequenceWithTargetSum(int[] nums, int k) {
         return count(0,nums,k);
-    }
+    } 
 
     private int count(int i,int[] nums,int k){
         if(k==0) return 1;
