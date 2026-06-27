@@ -3,7 +3,7 @@ class Solution {
         Set<String> set = new HashSet<>(wordDict);
 
         Boolean[] memo = new Boolean[s.length()];
-
+ 
         return canBreak(0,memo,set,s);
     }
 
