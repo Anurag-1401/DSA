@@ -1,5 +1,5 @@
 class Solution {
-    boolean graphColoring(int[][] edges, int m, int n) {
+    boolean graphColoring(int[][] edges, int m, int n) { 
         int[][] adj =new int[n][n];
 
         for(int[] e:edges){
