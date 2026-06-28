@@ -3,7 +3,7 @@ class ArrayQueue {
     int front;
     int rear;
     int capacity = 1000;
-    public ArrayQueue() {
+    public ArrayQueue() { 
         arr = new int[capacity];
         front = 0;
         rear = -1;
