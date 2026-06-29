@@ -6,7 +6,7 @@ class Solution {
         StringBuilder ans = new StringBuilder();
 
         for(char c:s.toCharArray()){
-            if((c >= 'a' && c <= 'z' )|| (c >= '0' && c<= '9')) ans.append(c);
+            if(Character.isLetterOrDigit(c)) ans.append(c);
 
             else if(c == '(') stack[++top] = c;
 
@@ -16,8 +16,7 @@ class Solution {
             }
 
             else {
-                if(top>=0 && presedence(stack[top]) > c ||
-                    top>=0 && presedence(stack[top]) == c && c != '^'){
+                if(top>=0 && presedence(stack[top]) >=  presedence(c) && c != '^'){
                         ans.append(stack[top--]);
                     }
 
