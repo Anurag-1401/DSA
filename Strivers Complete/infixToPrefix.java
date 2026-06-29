@@ -2,7 +2,7 @@ class Solution {
     public String infixToPrefix(String s) {
         int n = s.length();
 
-        StringBuilder rev = new StringBuilder();
+        StringBuilder rev = new StringBuilder(); 
         for (int i = n - 1; i >= 0; i--) {
             char c = s.charAt(i);
             if (c == '(') rev.append(')');
