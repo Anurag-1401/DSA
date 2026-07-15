@@ -1,28 +1,38 @@
 class Solution {
-    public int kthElement(int[] a, int[] b, int k) {
-      int m = a.length,n = b.length;
-
-      if(m > n) return kthElement(b,a,k);
-
-      
-      int low = Math.max(0,k-n),high = Math.min(k,m);
-
-      while(low<=high){
-        int parX = (low + high) / 2;
-        int parY  = k - parX;
-
-        int maxLeftX = (parX == 0) ? Integer.MIN_VALUE : a[parX - 1];
-        int minRightX = (parX == m) ? Integer.MAX_VALUE : a[parX];
-
-        int maxLeftY = (parY == 0) ? Integer.MIN_VALUE : b[parY - 1];
-        int minRightY = (parY == n) ? Integer.MAX_VALUE : a[parY];
-
-        if(maxLeftX <= minRightY && maxLeftY <= minRightX){
-            return Math.max(maxLeftX,maxLeftY);
-        } else if(maxLeftX > maxRightY) high = parX - 1;
-        else low = parX + 1;
-
-      }
-      return -1;
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        
+        int m = nums1.length;
+        int n = nums2.length;
+        int low = 0;
+        int high = m;
+        
+        while (low <= high) {
+            int partitionX = (low + high) / 2;
+            int partitionY = (m + n + 1) / 2 - partitionX;
+            
+            int maxLeftX = (partitionX == 0) ? Integer.MIN_VALUE : nums1[partitionX - 1];
+            int minRightX = (partitionX == m) ? Integer.MAX_VALUE : nums1[partitionX];
+            
+            int maxLeftY = (partitionY == 0) ? Integer.MIN_VALUE : nums2[partitionY - 1];
+            int minRightY = (partitionY == n) ? Integer.MAX_VALUE : nums2[partitionY];
+            
+            if (maxLeftX <= minRightY && maxLeftY <= minRightX) {
+                if ((m + n) % 2 == 1) {
+                    return Math.max(maxLeftX, maxLeftY);
+                }
+                return (Math.max(maxLeftX, maxLeftY) + Math.min(minRightX, minRightY)) / 2.0;
+            } 
+            else if (maxLeftX > minRightY) {
+                high = partitionX - 1;
+            } 
+            else {
+                low = partitionX + 1;
+            }
+        }
+        
+        return 0.0;
     }
 }
