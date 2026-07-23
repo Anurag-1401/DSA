@@ -10,7 +10,7 @@ class Solution {
     private boolean canBreak(int i,Boolean[] memo,Set<String> set,String s){
         if(i==s.length()) return true;
 
-        if(memo[i] != null) return memo[i];
+        if(memo[i]) return memo[i];
 
         for(int j = i+1;j<=s.length();j++){
             if(set.contains(s.substring(i,j)) && canBreak(j,memo,set,s)){
