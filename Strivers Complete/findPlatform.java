@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 class Solution {
     public int findPlatform(int[] Arrival, int[] Departure) {
-        int n = Arrival.length;
+        int n = Arrival.length; 
 
         Arrays.sort(Arrival);
         Arrays.sort(Departure);
