@@ -1,5 +1,5 @@
 class Solution {
-    public void solve(char[][] board) {
+    public void solve(char[][] board) { 
         if (board == null || board.length == 0) return;
 
         int m = board.length, n = board[0].length;
