@@ -4,7 +4,7 @@ class Solution {
         int[] indegree = new int[V];
 
         for (int u = 0; u < V; u++) {
-            for (int v : adj.get(u)) {
+            for (int v : adj.get(u)) { 
                 indegree[v]++;
             }
         }
