@@ -1,7 +1,7 @@
 class Solution {
     public int findTheCity(int n, int[][] edges, int max) {
         int[][] dist = new int[n][n];
-        for(int[] x : dist) Arrays.fill(x, 1000000);
+        for(int[] x : dist) Arrays.fill(x, 1000000); 
         for(int i = 0; i < n; i++) dist[i][i] = 0;
 
         for(int[] edge : edges) {
