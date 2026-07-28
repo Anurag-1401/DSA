@@ -5,7 +5,7 @@ class Solution {
         int INF = (int)1e9;
 
         int[] dist = new int[V];
-        Arrays.fill(dist, INF);
+        Arrays.fill(dist, INF); 
 
         dist[S] = 0;
 
