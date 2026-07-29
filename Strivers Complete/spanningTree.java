@@ -3,7 +3,7 @@ class Solution {
 
         boolean[] visited = new boolean[V];
 
-        PriorityQueue<int[]> pq =
+        PriorityQueue<int[]> pq = 
                 new PriorityQueue<>((a,b) -> a[0] - b[0]);
 
         pq.offer(new int[]{0, 0});
