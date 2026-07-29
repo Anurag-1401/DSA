@@ -8,7 +8,7 @@ class DisjointSet {
 
         parent = new int[n];
         rank = new int[n];
-        size = new int[n];
+        size = new int[n]; 
 
         for (int i = 0; i < n; i++) {
             parent[i] = i;   // initially self parent
