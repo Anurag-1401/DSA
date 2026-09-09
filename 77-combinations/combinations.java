@@ -11,7 +11,7 @@ class Solution {
             return;
         }
 
-        for(int idx = i;idx<=n;idx++){
+        for(int idx = i;idx<=n- (k - curr.size()) + 1;idx++){
             curr.add(idx);
             solve(curr,idx+1,n,k,res);
             curr.remove(curr.size()-1);
