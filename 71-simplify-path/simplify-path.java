@@ -18,6 +18,15 @@ class Solution {
             }
         }
 
-        return "/"+String.join("/",result);
+        StringBuilder builder = new StringBuilder();
+
+        if (result.isEmpty()) return "/";
+
+        for (String s : result) {
+            builder.append("/");
+            builder.append(s);
+        }
+
+        return builder.toString();
     }
 }
