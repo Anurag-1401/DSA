@@ -1,10 +1,9 @@
-WITH ConsecutiveAnalysis AS (
-    SELECT 
-        num,
-        LEAD(num, 1) OVER (ORDER BY id) AS next_num,
-        LEAD(num, 2) OVER (ORDER BY id) AS next_next_num
-    FROM Logs
-)
-SELECT DISTINCT num AS ConsecutiveNums
-FROM ConsecutiveAnalysis
-WHERE num = next_num AND num = next_next_num;
+# Write your MySQL query statement below
+SELECT DISTINCT a.num AS ConsecutiveNums
+FROM Logs a
+JOIN Logs b
+    ON a.num = b.num
+   AND a.id = b.id + 1
+JOIN Logs c
+    ON b.num = c.num
+   AND b.id = c.id + 1;
