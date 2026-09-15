@@ -37,7 +37,7 @@ class Solution {
 
         for (int i = 0; i < bucketCount; i++) {
             if (bucketMin[i] == Integer.MAX_VALUE) {
-                continue; // Skip empty bucket
+                continue;
             }
             maxGap = Math.max(maxGap, bucketMin[i] - previousMax);
             previousMax = bucketMax[i];
