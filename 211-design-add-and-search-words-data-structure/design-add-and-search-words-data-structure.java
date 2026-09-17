@@ -1,11 +1,5 @@
-class TrieNode {
-    TrieNode[] children = new TrieNode[26];
-    boolean isEnd;
-}
-
 class WordDictionary {
-    private TrieNode root;
-
+          private TrieNode root;
     public WordDictionary() {
         root = new TrieNode();
     }
@@ -13,39 +7,53 @@ class WordDictionary {
     public void addWord(String word) {
         TrieNode node = root;
         for (char c : word.toCharArray()) {
-            int idx = c - 'a';
-            if (node.children[idx] == null) {
-                node.children[idx] = new TrieNode();
+            int index = c - 'a';
+            if (node.children[index] == null) {
+                node.children[index] = new TrieNode();
             }
-            node = node.children[idx];
+            node = node.children[index];
         }
         node.isEnd = true;
     }
-    
-    public boolean search(String word) {
-        return dfs(word, 0, root);
-    }
-    
-    private boolean dfs(String word, int i, TrieNode node) {
-        if (node == null) return false;
-        if (i == word.length()) return node.isEnd;
 
-        char c = word.charAt(i);
+    public boolean search(String word) {
+        return searchInNode(word, 0, root);
+    }
+
+    private boolean searchInNode(String word, int index, TrieNode node) {
+        if (index == word.length()) {
+            return node.isEnd;
+        }
+
+        char c = word.charAt(index);
 
         if (c == '.') {
-            for (TrieNode child : node.children) {
-                if (child != null && dfs(word, i + 1, child)) {
-                    return true;
+            // Try all 26 possible children
+            for (int i = 0; i < 26; i++) {
+                if (node.children[i] != null) {
+                    if (searchInNode(word, index + 1, node.children[i])) {
+                        return true;
+                    }
                 }
             }
             return false;
         } else {
-            return dfs(word, i + 1, node.children[c - 'a']);
+            int childIndex = c - 'a';
+            if (node.children[childIndex] == null) {
+                return false;
+            }
+            return searchInNode(word, index + 1, node.children[childIndex]);
         }
     }
 }
-
-
+class TrieNode {
+   TrieNode[] children;
+   boolean isEnd;
+   public TrieNode() {
+        children = new TrieNode[26]; // 26 lowercase English letters
+        isEnd = false;
+   }
+}
 
 /**
  * Your WordDictionary object will be instantiated and called as such:
