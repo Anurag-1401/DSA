@@ -1,54 +1,57 @@
 class Solution {
-    class TrieNode {
-        TrieNode[] children = new TrieNode[26];
-        String word = null;
-    }
-
-    private TrieNode buildTrie(String[] words) {
-        TrieNode root = new TrieNode();
-        for (String w : words) {
-            TrieNode node = root;
-            for (char c : w.toCharArray()) {
-                int idx = c - 'a';
-                if (node.children[idx] == null) {
-                    node.children[idx] = new TrieNode();
-                }
-                node = node.children[idx];
-            }
-            node.word = w;
-        }
-        return root;
+    private static class Node {
+        Node[] ch = new Node[26];
+        String word;
+        int kids;
     }
 
     public List<String> findWords(char[][] board, String[] words) {
-        List<String> result = new ArrayList<>();
-        TrieNode root = buildTrie(words);
+        Node root = new Node();
 
-        int rows = board.length, cols = board[0].length;
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                dfs(board, r, c, root, result);
+        for (String w : words) {
+            Node cur = root;
+            for (char c : w.toCharArray()) {
+                if (cur.ch[c - 'a'] == null) {
+                    cur.ch[c - 'a'] = new Node();
+                    cur.kids++;
+                }
+                cur = cur.ch[c - 'a'];
             }
+            cur.word = w;
         }
-        return result;
+        
+        List<String> res = new ArrayList<>();
+
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[0].length; j++) 
+                dfs(board, i, j, root, res);
+
+        return res;
     }
+    
+    private void dfs(char[][] b, int i, int j, Node node, List<String> res) {
+        if (i < 0 || j < 0 || i >= b.length || j >= b[0].length) return;
 
-    private void dfs(char[][] board, int r, int c, TrieNode node, List<String> result) {
-        if (r < 0 || c < 0 || r >= board.length || c >= board[0].length) return;
-        char ch = board[r][c];
-        if (ch == '#' || node.children[ch - 'a'] == null) return;
+        char c = b[i][j];
+        if (c == '#' || node.ch[c - 'a'] == null) return;
 
-        node = node.children[ch - 'a'];
-        if (node.word != null) {  
-            result.add(node.word);
-            node.word = null;
+        Node nxt = node.ch[c - 'a'];
+
+        if (nxt.word != null) {
+            res.add(nxt.word);
+            nxt.word = null;
         }
+        
+        b[i][j] = '#';
+        dfs(b, i + 1, j, nxt, res);
+        dfs(b, i - 1, j, nxt, res);
+        dfs(b, i, j + 1, nxt, res);
+        dfs(b, i, j - 1, nxt, res);
+        b[i][j] = c;
 
-        board[r][c] = '#'; 
-        dfs(board, r + 1, c, node, result);
-        dfs(board, r - 1, c, node, result);
-        dfs(board, r, c + 1, node, result);
-        dfs(board, r, c - 1, node, result);
-        board[r][c] = ch;
+        if (nxt.kids == 0 && nxt.word == null) {
+            node.ch[c - 'a'] = null;
+            node.kids--;
+        }
     }
 }
