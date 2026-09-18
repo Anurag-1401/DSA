@@ -1,38 +1,34 @@
 class Solution {
     public int calculate(String s) {
-        if (s == null || s.length() == 0) return 0;
-
+        int n = s.length();
         int result = 0;
-        int lastNumber = 0;
-        int currentNumber = 0;
-        char lastOperator = '+';
+        int last = 0;
+        int num = 0;
+        char op = '+';
 
-        for (int i = 0; i < s.length(); i++) {
-            char currentChar = s.charAt(i);
+        for (int i = 0; i <= n; i++) {
+            char c = i < n ? s.charAt(i) : '+';
 
-            if (Character.isDigit(currentChar)) {
-                currentNumber = currentNumber * 10 + (currentChar - '0');
-            }
-
-            if ((!Character.isDigit(currentChar) && currentChar != ' ') || i == s.length() - 1) {
-                if (lastOperator == '+') {
-                    result += lastNumber;
-                    lastNumber = currentNumber;
-                } else if (lastOperator == '-') {
-                    result += lastNumber;
-                    lastNumber = -currentNumber;
-                } else if (lastOperator == '*') {
-                    lastNumber = lastNumber * currentNumber;
-                } else if (lastOperator == '/') {
-                    lastNumber = lastNumber / currentNumber;
+            if (c >= '0' && c <= '9') {
+                num = num * 10 + (c - '0');
+            } else if (c != ' ') {
+                if (op == '+') {
+                    result += last;
+                    last = num;
+                } else if (op == '-') {
+                    result += last;
+                    last = -num;
+                } else if (op == '*') {
+                    last *= num;
+                } else {
+                    last /= num;
                 }
 
-                lastOperator = currentChar;
-                currentNumber = 0;
+                op = c;
+                num = 0;
             }
         }
 
-        result += lastNumber;
-        return result;
+        return result + last;
     }
 }
