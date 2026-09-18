@@ -1,43 +1,39 @@
 class Solution {
-   public int calculate(String s) {
-    Stack<Integer> stack = new Stack<>();
-    int result = 0;
-    int num = 0;
-    int sign = 1;
+    public int calculate(String s) {
+        return dfs(s.toCharArray(),0)[0];
+    }
 
-    for (int i = 0; i < s.length(); i++) {
-        char c = s.charAt(i);
-
-        if (Character.isDigit(c)) {
-            num = num * 10 + (c - '0');
-        } 
-        else if (c == '+') {
-            result += sign * num;
-            num = 0;
-            sign = 1;
-        } 
-        else if (c == '-') {
-            result += sign * num;
-            num = 0;
-            sign = -1;
-        } 
-        else if (c == '(') {
-            stack.push(result);
-            stack.push(sign);
-            result = 0;
-            sign = 1;
-        } 
-        else if (c == ')') {
-            result += sign * num;
-            num = 0;
-            result *= stack.pop(); 
-            result += stack.pop(); 
+    private int[] dfs(char[] arr,int index){
+        int num=0;
+        int sign=1;
+        int result=0;
+        int n = arr.length;
+        while(index<n){
+            if(arr[index]>='0' && arr[index]<='9'){
+                num = num * 10 + (arr[index]-'0');
+            }
+            else if(arr[index]=='+'){
+                result += num*sign;
+                sign=1;
+                num=0;
+            }
+            else if(arr[index]=='-'){
+                result += num*sign;
+                sign=-1;
+                num=0;
+            }
+            else if(arr[index]=='('){
+                int[] news = dfs(arr,index+1);
+                num = news[0];
+                index = news[1];
+            }
+            else if(arr[index]==')'){
+                result += num*sign;
+                return new int[]{result,index};
+            }
+            index++;
         }
+        result += num*sign;
+        return new int[]{result,index};
     }
-    if (num != 0) {
-        result += sign * num;
-    }
-    return result;
-}
-
 }
