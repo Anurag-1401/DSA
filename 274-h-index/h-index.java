@@ -32,3 +32,25 @@ class Solution {
         return i + 1;
     }
 }
+
+
+// class Solution {
+//     public int hIndex(int[] citations) {
+//         int n = citations.length;
+//         int[] tmp = new int[n+1];
+//         for (int i = 0; i < n; i++) {
+//             if (citations[i] > n) {
+//                 tmp[n]++;
+//             }
+//             else {
+//                 tmp[citations[i]]++;
+//             }
+//         }
+//         int total = 0;
+//         for (int i = n; i >=0; i--) {
+//             total += tmp[i];
+//             if (total >= i) return i;
+//         }
+//         return 0;
+//     }
+// }
