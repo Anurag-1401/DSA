@@ -4,7 +4,7 @@ class Solution {
         int l=0,maxL=0,dist=0;
 
         for(int r=0;r<fruits.length;r++){
-            if(freq[fruits[r]] == 0) dist++;
+            if(freq[fruits[r]] == 0) dist++; 
             freq[fruits[r]]++;
 
             while(dist>2){
