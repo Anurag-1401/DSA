@@ -1,7 +1,7 @@
 class Solution {
     public String minWindow(String s, String t) {
         if (s.length() < t.length()) return "";
-
+ 
         int[] freq = new int[128];
         for (int i = 0; i < t.length(); i++)freq[t.charAt(i)]++;
 
